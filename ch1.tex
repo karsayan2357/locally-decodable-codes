@@ -1,0 +1,189 @@
+\chapter{Introduction}
+
+\section{Definition of Local Decoding and Correction}
+
+This chapter mostly consists of \emph{local correction} of some linear codes \emph{along some curves}, mainly linear and quadratic. Let us first define what is local correction and decoding formally.
+
+\begin{definition}[Locally Decodable Code]%{Locally Decodable Code}{}
+	A $q$-ary code $C : \mathbb{F}_q^k \to \mathbb{F}_q^N$ is said to be
+	$(r,\delta,\varepsilon)$-\emph{locally decodable} if there exists a randomized
+	decoding algorithm $\sca$ such that
+	
+	\begin{enumerate}
+		\item For all $\bfx \in \mathbb{F}_q^k$, $i \in [k]$, and all vectors
+		$\bfy \in \mathbb{F}_q^N$ satisfying $\Delta(C(\bfx),\bfy) \le \delta$, we have:
+		\[
+		\Pr[\sca^{\bfy}(i)=\bfx(i)] \ge 1-\varepsilon,
+		\]
+		where the probability is taken over the random coin tosses of the
+		algorithm $\sca$.
+		
+		\item $\sca$ makes at most $r$ queries to $\bfy$.
+	\end{enumerate}
+\end{definition} 
+
+\begin{definition}[Locally Correctable Code]%{Locally Correctable Code}{}
+	A code $C \subseteq \mathbb{F}_q^N$ is said to be
+	$(r,\delta,\varepsilon)$-locally correctable if there exists a randomized
+	correcting algorithm $\sca$ such that
+	
+	\begin{enumerate}
+		\item For all $\bfc \in C$, $i \in [N]$, and all vectors
+		$\bfy \in \mathbb{F}_q^N$ satisfying $\Delta(\bfc,\bfy) \le \delta$, we have
+		\[
+		\Pr[\sca^{\bfy}(i)=\bfc(i)] \ge 1-\varepsilon,
+		\]
+		where the probability is taken over the random coin tosses of the
+		algorithm $\sca$.
+		
+		\item $\sca$ makes at most $r$ queries to $\bfy$.
+	\end{enumerate}
+\end{definition}
+
+The main difference between them is that in locally decodable code, we want to retrieve coordinates of the sent message from recieved word and for locally correctable codes, we want to retrieve the coordinates of codewords. Lemma~2.3 in \cite{Yek12} shows that a linear locally correctable code implies existence of a locally decodable code with the same parameter as of the first code.
+
+\section{Reed Muller locally decodable codes}
+Before going into the correction of Reed Muller, recall the definition of Reed Muller code.
+
+\begin{definition}[Reed Muller Codes]%{Reed Muller Codes}{}
+	For a finite field $\bbf_q$, define evaluation of $f\in\bbf[x_1,\ldots,x_n]$ at $\bfz = (z_1,\ldots,z_n)\in\bbf_q^n$ to be
+	\[
+	\mathrm{Eval}_{\bfz}(f) = f(z_1,\ldots,z_n).
+	\]
+	Also define $\mathrm{Eval}(f) \coloneqq (Eval_{\bfz_1}(f), \ldots, Eval_{\bfz_{q^n}}(f))\in\bbf_{q^n}$ for some fixed ordering in $\bbf_{q^n}$.	Now define \emph{Reed-Muller Code} of order $r$ as 
+	\[
+	\mathrm{RM}(n,r) \coloneqq \{\mathrm{Eval}(f) : f\in\bbf[x_1,\ldots,x_n], \deg f \leq r \}.
+	\]
+\end{definition}
+
+Our main goal of this section is to recover the evaluation of $f\in\bbf_q[z_1,\ldots,z_n]$ at $\bfw\in\bbf_q^n$ from evaluations, possibly corrupted, of $f\in\bbf_q[z_1,\ldots,z_n]$ at some points on a curve passing through $\bfw$. So for the most basic local correction, we take a line passing through $\bfw$ first, then move into degree 2 curve.
+
+\subsection{Basic Linear Local Correction}
+
+The main proposition governing this section is the following.
+\begin{boxH}
+	\begin{proposition}{}{}
+		Let $n$ and $d$ be positive integers. Let $q$ be a prime power, $d < q - 1$; then there exists a linear code of dimension $	k = \binom{n+d}{d}$	in $\mathbb{F}_q^N$, $N = q^n$, that is $(d+1, \delta, (d+1)\delta)$-locally correctable for all $\delta$.
+	\end{proposition}
+\end{boxH}
+
+We shall find the failure probability, i.e., the $\varepsilon$ among the three parameters. The corrector procedure is given fully in detail in Proposition~2.4 in \cite{Yek12}. The main idea of the proof is to look at all $\bbf_q^n$ evaluations of a total degree $d$ multivariate polynomial $f\in\bbf_q[z_1,\ldots,z_n]$. The goal of the linear corrector would be to retrieve $f(\bfw)$ for a given $\bfw\in\bbf_q^n$, with only the recieved word $\tilde{\bfc}$ with high probability. Now what the corrector does is, it takes $d+1$ random points(uniform) on a random line passing through $\bfw$ and queries $\tilde{\bfc}$ at those evaluation points and find a univariate polynomial $h$ of degree atmost $d$ that is the restriction of $f$ to that line. We shall show that the failure probability of the corrector is atmost $(d+1)\delta$.
+
+\begin{proof}[Proof of failure probability]
+	Consider $\bfv\sim\mathrm{Unif}(\bbf_q^n)$ and the line $L = \{\bfw + \lambda\bfv : \lambda\in\bbf_q\}$. Also consider a uniformly sampled subset $S$ of $\bbf_q^*$ of size $d+1$. Now as the corrector queries the points, we observe that for all $\lambda\in S$, 
+	\[
+	\Pr[f(\bfw + \lambda\bfv)\neq c_{\bfw + \lambda\bfv}]\leq \delta.
+	\]
+	
+	Now the success probability is 
+	\begin{align*}
+		\Pr[f(\bfw + \lambda\bfv) =  c_{\bfw + \lambda\bfv} \text{ for all } \lambda\in S] 
+		& = 1 - \Pr\left[f(\bfw + \lambda\bfv)\neq c_{\bfw + \lambda\bfv} \text{ for some } \lambda\in S\right]  \\ 
+		& \geq 1 - \sum_{\lambda\in S} \Pr\left[f(\bfw + \lambda\bfv)\neq c_{\bfw + \lambda\bfv}\right] \\
+		& \geq 1 - (d+1)\delta.
+	\end{align*} 
+	
+\end{proof}
+
+
+	\subsection{Improvement on line local decoding}
+
+Now naturally we would want to decrease the failure probability, thus we would want to make the above decoding better. Here, keep the code same and try to interpolate the univariate restricition polynomial from fewer query. For this, we would need $d$ to be very smaller that $q$. The main proposition for this section is the following:
+\begin{boxH}
+		\begin{proposition}\label{improve}%{}{improve}
+			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q$ be a prime power such that $d \leq \sigma(q-1) - 1$; then there exists a linear code of dimension $k = \binom{n+d}{d}$ in $\mathbb{F}_q^N$, $N = q^n$, that is $(q-1, \delta, 2\delta/(1-\sigma))$-locally correctable for all $\delta$.
+		\end{proposition}
+\end{boxH}
+
+We use basically the same setup as before but change the interpolation part, here we query on atmost $(1-\sigma)(q-1)/2$ points and interpolate the polynomial via \emph{Berlekamp-Welch} as given in \cite{GRS25}. The reason for such a weird query number is because beyond this, Berlekamp-Welch can not uniquely interpolate the polynomial. As $d<\sigma(q-1)$, we have $(1-\sigma)(q-1)/2>(q-1-d)/2$, this surpasses the RS bound for unique decoding. 
+\begin{proof}[Proof of failure probability]
+		We shall calculate the failure a bit differently here, we shall do it via the probability of the random variable $X$ denoting the number of corrupted query points is very big, i.e., $\Pr[X\geq (1-\sigma)(q-1)/2]$. This we can get an upper bound by \emph{Markov Inequality} as given in \cite{Alon2000} if we can find $\bbe[X]$. If we can find the expectation, the rest is just calculations that is done in the proof of Proposition~2.5 in \cite{Yek12}.
+		
+		Notice that 
+		\begin{align}
+			\bbe[X] 
+			& = \bbe\left[ \sum_{\lambda\in\bbf_q^*} \mathbbm{1}_{\{f(\bfw + \lambda\bfv) \text{ is corrupted }\}} \right]\label{rv define} \\[0.1em]
+			& = \sum_{\lambda\in\bbf_q^*}\Pr[f(\bfw+\lambda\bfv) \text{ is corrupted }]\nonumber \\
+			& \leq \sum_{\lambda\in\bbf_q^*} \delta = (q-1)\delta \nonumber
+		\end{align}
+		
+		This now gives the failure probability for the worst possible case:
+		\begin{align*}
+			\Pr[X\geq(1-\sigma)(q-1)/2]
+			& \leq \frac{\bbe[X]}{(1-\sigma)(q-1)/2} \\
+			& \leq \frac{2\delta}{1 - \sigma}.
+		\end{align*}
+\end{proof}
+
+\subsection{Decoding on Curves}
+Now we go from the line to a quadratic parametrized curve, i.e., we consider the curve $\chi = \{\bfw + \lambda\bfv_1 + \lambda^2\bfv_2 : \lambda \in \bbf_q^*\}$, where $\bfv_1, \bfv_2 \sim \mathrm{Unif}(\bbf_{q}^n)$. 
+\begin{boxH}
+		\begin{proposition}{}{}
+			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q$ be a prime power such that $d \leq \sigma(q-1) - 1$; then there exists a linear code of dimension $k = \binom{n+d}{d}$ in $\mathbb{F}_q^N$, $N = q^n$, that for all positive $\delta < 1/2 - \sigma$ is $(q-1, \delta, O_{\sigma, \delta}(1/q))$-locally correctable.
+		\end{proposition}
+\end{boxH}
+
+Here we shall take the same code and everything would be the same as Proposition~\ref{improve} but the only difference would be that the interpolating polynomial is having degree atmost $2d$ and number of query points is atmost $(1-2\sigma)(q-1)/2$. We shall calculate the failure probability by the same random variable here also but in a different way, and instead of using the Markov inequality, we shall be using Chebyshev Inequality, given in \cite{Alon2000}.
+
+\begin{proof}[Proof of failure probability]
+		We want to find the failure probability, that is 
+		\[
+		\Pr\left[X\geq \frac{1}{2}(1-2\sigma)(q-1)\right].
+		\]
+		Notice that the indicator random variables in \ref{rv define} are independent, thus the variance of $X$ becomes
+		$\bbd[X] \leq (\delta - \delta^2)(q-1)$. So by applying Chebyshev, we get failure probability in worst case scenario.
+		\begin{align*}
+				\Pr\left[X\geq \frac{1}{2}(1-2\sigma)(q-1)\right]
+				& \leq \frac{\bbd[X]}{((1-2\sigma)(q-1)/2 - (q-1)\delta)^2} \\[0.2em]
+				& = O_{\delta, \sigma}(1/q).
+		\end{align*}
+\end{proof}
+
+\section{Binary Code Correction}
+In this section, we shall use whatever idea we have developed so far and use Code Concetanation, given in \cite{GRS25}, to locally correct binary codes. Recall the definition of code concetanation.
+\begin{definition}{Code Concetanation}{}
+		For $q \geq 2$, $k \geq 1$ and $Q = q^k$, consider two codes which we call outer code and inner code:
+		\begin{align}
+			C_{\text{out}} &: [Q]^K \to [Q]^N, \nonumber \\
+			C_{\text{in}} &: [q]^k \to [q]^n. \nonumber
+		\end{align}
+		Note that the alphabet size of $C_{\text{out}}$ exactly matches the number of messages for $C_{\text{in}}$, which means that we can have a bijection between $[Q]$ and $[q]^k$ (this means we can use $C_{\text{in}}$ to encode any symbol in a codeword in $C_{\text{out}}$). Then given $m = (m_1, \ldots, m_K) \in [Q]^K$, we have the code $C_{\text{out}} \circ C_{\text{in}} : [q]^{kK} \to [q]^{nN}$ defined as
+		\[
+		C_{\text{out}} \circ C_{\text{in}}(m) = \left( C_{\text{in}}(C_{\text{out}}(m)_1), \ldots, C_{\text{in}}(C_{\text{out}}(m)_N) \right),
+		\]
+		where
+		\[
+		C_{\text{out}}(m) = \left( C_{\text{out}}(m)_1, \ldots, C_{\text{out}}(m)_N \right).
+		\]
+		
+\end{definition}
+
+The main proposition of this section is:
+
+\begin{boxH}
+		\begin{proposition}{}{}
+			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q = 2^b$ be a power of two such that $d \leq \sigma(q-1) - 1$. Suppose that there exists a binary linear code $C_{in}$ of distance $\mu B$ encoding $b$-bit messages to $B$-bit codewords; then there exists a linear code $C$ of dimension $k = \binom{n+d}{d} \cdot b$ in $\mathbb{F}_2^N$, $N = q^n \cdot B$, that for all positive $\delta < (1/2 - \sigma)\mu$ is $((q-1)B, \delta, O_{\sigma, \mu, \delta}(1/q))$-locally correctable.
+		\end{proposition}
+		
+\end{boxH}
+
+Here we take the code to be the code concetanation of $C_{in}$ and the code we discussed in the previous section, with $C_{in}$ as the inner code. Then we want to find the inetrpolating polynomial $h$ of degree atmost $2d$ by seeing agreement of $h$ and $C_{in}$ encoding of $h$ by atmost $(1-2\sigma)(q-1)\mu B/2$ queries.
+
+\begin{proof}[Proof of failure probability]
+	We want to decompose the same random variable $X$ by weighted sum of the same indicator random variables as in \ref{rv define}. For $\bfa\in\bbf_{q}^n$, define $t_{\bfa}$ to be the number of corruptions in the $C_{in}$ encoding of $\mathrm{Eval}_{\bfa}(f)$, so we have $\sum_{\bbf_{q}^n}t_{\bfa} \leq \delta B q^n$. Now for $\lambda\in\bbf_{q}^*$,
+	\[
+	X^{\lambda} = \sum_{\bfa\in\bbf_{q}^n}t_{\bfa}\cdot\mathbbm{1}_{\{\chi(\lambda) = \bfa\}}.
+	\]
+	So total number of corrupted query points is $	X = \sum_{\lambda\in\bbf_{q}^*}X^{\lambda}$. Now the failure probability that we want to calculate is 
+	\[
+	\Pr\left[X\geq \frac{1}{2}(1-2\sigma)(q-1)\mu B\right].
+	\]
+	
+	Now similary we get that $\bbe[X]\leq \delta(q-1)B$ and $\bbd[X]\leq (\delta - \delta^2)(q-1)B^2$, hence applying Chebyshev, we get out desired bound for the failure probability.
+\end{proof}
+
+
+
+
+
+
