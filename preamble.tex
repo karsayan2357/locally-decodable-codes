@@ -8,6 +8,8 @@
 \usepackage{lastpage}
 \usepackage{titling}
 \usepackage{lipsum}
+\usepackage{enumerate}
+%\usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{bbm}
 %\usepackage{tocloft}
@@ -20,20 +22,23 @@
 %\usepackage{mathrsfs}
 %\usepackage{newtxtext, newtxmath}
 %\usepackage{XCharter, eulerpx}
-\usepackage{kpfonts, eulervm}
+%\usepackage{kpfonts, eulervm}
 \usepackage{setspace}
 \onehalfspacing
-%\usepackage{palatino, mathpazo}
+\usepackage{palatino, mathpazo}
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{xcolor}
 %\titleformat{\section}{\sffamily}
 \pagenumbering{roman}
+\definecolor{linkblue}{RGB}{0,70,140}
+\definecolor{urlblue}{RGB}{90,0,160}
+\definecolor{citegreen}{RGB}{0,110,90}
 \usepackage[
 colorlinks=true,
-linkcolor=blue,
-citecolor=magenta,
-urlcolor=red
+linkcolor=linkblue,
+citecolor=citegreen,
+urlcolor=urlblue
 ]{hyperref}
 \usepackage{enumerate}
 %\fancyhf{}
@@ -57,6 +62,7 @@ urlcolor=red
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
 
 
 \definecolor{main}{HTML}{5989cf}    % setting main color to be used
@@ -70,12 +76,34 @@ urlcolor=red
 }                           % setting global options for tcolorbox
 
 
-\newtcolorbox{boxH}{
+\newtcolorbox{bluebox}{
 	colback = sub, 
 	colframe = main, 
 	boxrule = 0pt, 
 	leftrule = 6pt % left rule weight
 }
+
+\definecolor{maingreen}{HTML}{4a9c59}    % setting main green color
+\definecolor{subgreen}{HTML}{d4edda}     % setting sub green color
+
+\newtcolorbox{greenbox}{
+    colback = subgreen, 
+    colframe = maingreen, 
+    boxrule = 0pt, 
+    leftrule = 6pt
+}
+
+\definecolor{mainpurple}{HTML}{6a1b9a}    % setting main purple color
+\definecolor{subpurple}{HTML}{ede7f6}     % setting sub purple color
+
+\newtcolorbox{purplebox}{
+    colback = subpurple, 
+    colframe = mainpurple, 
+    boxrule = 0pt, 
+    leftrule = 6pt
+}
+
+
 %\newtcbtheorem[number within=section]{theorem}{Theorem}{}{theorem}
 
 
@@ -200,6 +228,10 @@ urlcolor=red
 %	\begin{center}\fontfamily{lmss}\bfseries\large \S\hspace{0.05in}Abstract\hspace{0.05in}\S\end{center}
 %	\normalsize}
 %{\par}
+
+
+
+\newcommand{\mon}{\mathrm{mon}}
 
 
 
