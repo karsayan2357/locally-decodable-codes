@@ -8,9 +8,12 @@
 \usepackage{lastpage}
 \usepackage{titling}
 \usepackage{lipsum}
+\usepackage[sans]{dsfont}
 \usepackage{enumerate}
 %\usepackage{enumitem}
 \usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{array}       
 \usepackage{bbm}
 %\usepackage{tocloft}
 \usepackage{tcolorbox}
@@ -234,6 +237,15 @@ urlcolor=urlblue
 \newcommand{\mon}{\mathrm{mon}}
 
 
+%% inner prod %%%
+\newcommand{\inp}[2]{\langle #1, #2 \rangle}
+
+%% tensor & xor %% 
+\newcommand{\tensor}{\otimes}
+\newcommand{\xor}{\oplus}
+
+%% matrix %%
+\newcommand{\rank}{\mathsf{rank}}
 
 
 
@@ -415,3 +427,32 @@ urlcolor=urlblue
 \newcommand{\scx}{\mathscr{X}}
 \newcommand{\scy}{\mathscr{Y}}
 \newcommand{\scz}{\mathscr{Z}}
+
+
+%%%%% DS FONTS %%%%
+\newcommand{\dsa}{\mathds{A}}
+\newcommand{\dsb}{\mathds{B}}
+\newcommand{\dsc}{\mathds{C}}
+\newcommand{\dsd}{\mathds{D}}
+\newcommand{\dse}{\mathds{E}}
+\newcommand{\dsf}{\mathds{F}}
+\newcommand{\dsg}{\mathds{G}}
+\newcommand{\dsh}{\mathds{H}}
+\newcommand{\dsi}{\mathds{I}}
+\newcommand{\dsj}{\mathds{J}}
+\newcommand{\dsk}{\mathds{K}}
+\newcommand{\dsl}{\mathds{L}}
+\newcommand{\dsm}{\mathds{M}}
+\newcommand{\dsn}{\mathds{N}}
+\newcommand{\dso}{\mathds{O}}
+\newcommand{\dsp}{\mathds{P}}
+\newcommand{\dsq}{\mathds{Q}}
+\newcommand{\dsr}{\mathds{R}}
+\newcommand{\dss}{\mathds{S}}
+\newcommand{\dst}{\mathds{T}}
+\newcommand{\dsu}{\mathds{U}}
+\newcommand{\dsv}{\mathds{V}}
+\newcommand{\dsw}{\mathds{W}}
+\newcommand{\dsx}{\mathds{X}}
+\newcommand{\dsy}{\mathds{Y}}
+\newcommand{\dsz}{\mathds{Z}}

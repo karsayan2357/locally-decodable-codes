@@ -1,1 +1,31 @@
 \chapter{Matching Vectors}
+Recall the definition of \emph{matching vectors}, given in Definition~\ref{mvf}. We shall give some combinatorial and algorithmic viewpoint for constructing such matching vector families in this chapter.
+
+\section{Grolmusz Theorem}
+
+This section shall mainly consist of the construction of an MVF as per \cite{Grolmusz2000}. The main result of Grolmusz is the following:
+\begin{bluebox}
+     \begin{theorem}
+    Let
+    $m = \prod_{i=1}^t p_i$
+    be a product of distinct primes. Then there exists an explicit matching vector family in $\bbz_m^l$ of size
+    \[
+    k = \exp\left(
+        \Omega\left(
+            \frac{(\log l)^t}{(\log\log l)^{t-1}}
+        \right)
+    \right).
+    \]
+\end{theorem}
+\end{bluebox}
+
+Before going to the actual proof of this theorem, we first state some interesting ideas. One of the most important combinatorial question that can arise in one's mind is how large the size of the family can be. The following lemma gives an upper bound on the size of an MVF.
+
+\begin{bluebox}
+    \begin{lemma}
+        If $p$ is a prime, then any MVF in $\bbz_m^l$ has size at most $1 + l^{p-1}$. 
+    \end{lemma}
+\end{bluebox}
+\begin{proof}
+    Let $\calu, \calv$ be a MVF in $\bbz_p^l$ of size $k$. Consider the matrix $A\in\bbz_p^{k\times k}$ with $A_{i,j} = \inp{\bfu_i}{\bfv_j}$. By \emph{Fermat's Little Theorem}, Lemma~\ref{app:fermat} in Appendix~\ref{app}, we observe that $A_{i,j}^{p-1} = 1$ for all $i,j$. Observe, $A^{p-1} = J_k - I_k$, hence $\rank(A^{p-1})\leq k-1$ and $\rank(A^{p-1}) \leq \rank(A)^{p-1} \leq l^{p-1}$, by Lemma~\ref{app:matrix power}.
+\end{proof}

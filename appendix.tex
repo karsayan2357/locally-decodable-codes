@@ -1,0 +1,22 @@
+\chapter{Appendix}\label{app}
+
+\begin{lemma}\label{app:kronecker}
+    If $X, Y$ are two matrices over $\bbf_q$ of proper dimension, then $\rank(X\tensor Y) = \rank(X)\cdot\rank(Y)$.
+\end{lemma}
+
+\begin{lemma}\label{app:matrix power}
+    Suppose $k, t\in\bbn$ and $A, B\in\bbf_q^{k\times k}$ such that $B_{i,j} = A_{i,j}^t$ for all $i,j\in[k]$. Then $\rank(B) \leq \rank(A)^t$.
+\end{lemma}
+\begin{proof}
+    Take the matrix $T = \tensor^{t}A$. Now notice that $B$ is a sub-matrix of $T$. By Lemma~\ref{app:kronecker}, $\rank(B)\leq\rank(T) = \rank(A)^t$.
+\end{proof}
+
+\begin{lemma}[Fermat's Little Theorem]\label{app:fermat}
+    If $a\in\bbz$ and $p\in\bbp$ such that $\gcd(a,p) = 1$, then 
+    \[
+            a^{p-1} \equiv 1 \pmod p.
+    \]  
+    \begin{proof}
+        Given in \cite{burton2011}.
+    \end{proof}
+\end{lemma}
