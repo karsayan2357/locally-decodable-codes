@@ -61,11 +61,11 @@ Our main goal of this section is to recover the evaluation of $f\in\bbf_q[z_1,\l
 \subsection{Basic Linear Local Correction}
 
 The main proposition governing this section is the following.
-\begin{bluebox}
+\begin{greybox}
 	\begin{proposition}{}{}
 		Let $n$ and $d$ be positive integers. Let $q$ be a prime power, $d < q - 1$; then there exists a linear code of dimension $	k = \binom{n+d}{d}$	in $\mathbb{F}_q^N$, $N = q^n$, that is $(d+1, \delta, (d+1)\delta)$-locally correctable for all $\delta$.
 	\end{proposition}
-\end{bluebox}
+\end{greybox}
 
 We shall find the failure probability, i.e., the $\varepsilon$ among the three parameters. The corrector procedure is given fully in detail in Proposition~2.4 in \cite{Yek12}. The main idea of the proof is to look at all $\bbf_q^n$ evaluations of a total degree $d$ multivariate polynomial $f\in\bbf_q[z_1,\ldots,z_n]$. The goal of the linear corrector would be to retrieve $f(\bfw)$ for a given $\bfw\in\bbf_q^n$, with only the recieved word $\tilde{\bfc}$ with high probability. Now what the corrector does is, it takes $d+1$ random points(uniform) on a random line passing through $\bfw$ and queries $\tilde{\bfc}$ at those evaluation points and find a univariate polynomial $h$ of degree atmost $d$ that is the restriction of $f$ to that line. We shall show that the failure probability of the corrector is atmost $(d+1)\delta$.
 
@@ -89,11 +89,11 @@ We shall find the failure probability, i.e., the $\varepsilon$ among the three p
 	\subsection{Improvement on line local decoding}
 
 Now naturally we would want to decrease the failure probability, thus we would want to make the above decoding better. Here, keep the code same and try to interpolate the univariate restricition polynomial from fewer query. For this, we would need $d$ to be very smaller that $q$. The main proposition for this section is the following:
-\begin{bluebox}
+\begin{greybox}
 		\begin{proposition}\label{improve}%{}{improve}
 			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q$ be a prime power such that $d \leq \sigma(q-1) - 1$; then there exists a linear code of dimension $k = \binom{n+d}{d}$ in $\mathbb{F}_q^N$, $N = q^n$, that is $(q-1, \delta, 2\delta/(1-\sigma))$-locally correctable for all $\delta$.
 		\end{proposition}
-\end{bluebox}
+\end{greybox}
 
 We use basically the same setup as before but change the interpolation part, here we query on atmost $(1-\sigma)(q-1)/2$ points and interpolate the polynomial via \emph{Berlekamp-Welch} as given in \cite{GRS25}. The reason for such a weird query number is because beyond this, Berlekamp-Welch can not uniquely interpolate the polynomial. As $d<\sigma(q-1)$, we have $(1-\sigma)(q-1)/2>(q-1-d)/2$, this surpasses the RS bound for unique decoding. 
 \begin{proof}[Proof of failure probability]
@@ -117,11 +117,11 @@ We use basically the same setup as before but change the interpolation part, her
 
 \subsection{Decoding on Curves}
 Now we go from the line to a quadratic parametrized curve, i.e., we consider the curve $\chi = \{\bfw + \lambda\bfv_1 + \lambda^2\bfv_2 : \lambda \in \bbf_q^*\}$, where $\bfv_1, \bfv_2 \sim \mathrm{Unif}(\bbf_{q}^n)$. 
-\begin{bluebox}
+\begin{greybox}
 		\begin{proposition}{}{}
 			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q$ be a prime power such that $d \leq \sigma(q-1) - 1$; then there exists a linear code of dimension $k = \binom{n+d}{d}$ in $\mathbb{F}_q^N$, $N = q^n$, that for all positive $\delta < 1/2 - \sigma$ is $(q-1, \delta, O_{\sigma, \delta}(1/q))$-locally correctable.
 		\end{proposition}
-\end{bluebox}
+\end{greybox}
 
 Here we shall take the same code and everything would be the same as Proposition~\ref{improve} but the only difference would be that the interpolating polynomial is having degree atmost $2d$ and number of query points is atmost $(1-2\sigma)(q-1)/2$. We shall calculate the failure probability by the same random variable here also but in a different way, and instead of using the Markov inequality, we shall be using Chebyshev Inequality, given in \cite{Alon2000}.
 
@@ -160,12 +160,12 @@ In this section, we shall use whatever idea we have developed so far and use Cod
 
 The main proposition of this section is:
 
-\begin{bluebox}
+\begin{greybox}
 		\begin{proposition}{}{}
 			Let $0<\sigma < 1$, $n$ and $d$ be positive integers. Let $q = 2^b$ be a power of two such that $d \leq \sigma(q-1) - 1$. Suppose that there exists a binary linear code $C_{in}$ of distance $\mu B$ encoding $b$-bit messages to $B$-bit codewords; then there exists a linear code $C$ of dimension $k = \binom{n+d}{d} \cdot b$ in $\mathbb{F}_2^N$, $N = q^n \cdot B$, that for all positive $\delta < (1/2 - \sigma)\mu$ is $((q-1)B, \delta, O_{\sigma, \mu, \delta}(1/q))$-locally correctable.
 		\end{proposition}
 		
-\end{bluebox}
+\end{greybox}
 
 Here we take the code to be the code concetanation of $C_{in}$ and the code we discussed in the previous section, with $C_{in}$ as the inner code. Then we want to find the inetrpolating polynomial $h$ of degree atmost $2d$ by seeing agreement of $h$ and $C_{in}$ encoding of $h$ by atmost $(1-2\sigma)(q-1)\mu B/2$ queries.
 

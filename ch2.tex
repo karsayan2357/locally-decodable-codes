@@ -6,16 +6,14 @@ In the RM codes seen in Chapter~\ref{ldc}, we could do local correction upto $\d
 
 We first define what \emph{matching vectors} are, then we can specify the encoding of \emph{matching vector code}.
 
-\begin{definition}[Matching Vectors]\label{mvf}
+  \begin{definition}[Matching Vectors]\label{mvf}
     Let $S\subseteq\bbz_{m}^n$, we say that the families $\calu = \{\bfu_1, \ldots, \bfu_k\}$ and $\calv = \{\bfv_1,\ldots, \bfv_k\}$ of vectors in $\bbz_m^n$ forms an $S$-\emph{matching family} if 
     \begin{enumerate}
         \item For all $i\in[k], (\bfu_i, \bfv_i) = 0$, 
         \item For all $i\neq j$ in $[k]$, $(\bfu_j, \bfu_i) \in S$.
     \end{enumerate}
 \end{definition}
-
-\begin{greenbox}
-    \begin{observation}
+\begin{observation}
         Let $g$ be a generator of the unique subgroup $C_m$ of $\bbf_q^*$ of size $m$. Then for any $\bfu,\bfv,\bfw\in\bbz_m^n$ and $\lambda\in\bbz_m$, 
         \begin{align*}
             \mon_{\bfu}(g^{w+\lambda v}) 
@@ -25,11 +23,10 @@ We first define what \emph{matching vectors} are, then we can specify the encodi
         \end{align*}
         So we can see that $M_{\bfw, \bfv}$-evaluation of $\mon_{\bfu}$ is a $C_m$-evaluation of a univariate polynomial $g^{(\bfu, \bfw)}\cdot y^{(\bfv, \bfu)}\in\bbf_q[y]$.
     \end{observation}
-\end{greenbox}
 
 Now we define the encoding of matching vector codes, but we first need to assume that there exists an $S$-matching family $\calu$ and $\calv$ of size $k$. We shall deal with this existence later. There is also an abstract decoding method mentioned that will be the main motivation behind all the decoding procedure in the coming sections.
 
-\begin{purplebox}
+\begin{greybox}
    \paragraph{\large (\textsc{Encoding})} We take a $k$-length message $\bfx=(\bfx(1), \ldots, \bfx(k))\in\bbf_q^k$ and encode ot by $C_m^n$-evaluations of the polynomial 
    \begin{equation}  \label{enc}
    F_{\bfx}(z_1,\ldots,z_n) = \sum_{j=1}^{k} x(j)\mon_{u_j}(z_1,\ldots,z_n).
@@ -41,12 +38,11 @@ Now we define the encoding of matching vector codes, but we first need to assume
         \item Pick $\bfw\sim\mathrm{Unif}(\bbz_m^n)$. 
         \item Compute the restriction of $F \equiv F_{\bfx}$ to $M_{\bfw, v_i}$ by some queries of the corrupted $M_{w,v_i}$-evaluation of $F$ at less than or equal to $m$ points.
     \end{enumerate}
-\end{purplebox}
+\end{greybox}
 
 One might ask now that what is the importance of this restriction and how it will help in retrieving $\bfx(i)$. The following observation gives us the motivation of using matching family and this second step.
 
-\begin{greenbox}
-    \begin{observation}
+\begin{observation}
         The $M_{w,v_i}$-evaluation of $F$ is equivalent to the $C_m^n$-evaluation of the polynomial $f$ defined as:
 
         \[
@@ -60,7 +56,6 @@ One might ask now that what is the importance of this restriction and how it wil
 
         So we can get $\bfx(i)$ by just computing $f(0)/g^{(\bfu_i, \bfw)}$. But of course we can not construct this polynomial, so we try to find the restriction of $F$ to $M_{\bfw, \bfv_i}$.
     \end{observation}
-\end{greenbox}
 
 \section{Some Decoding Procedures}
 
@@ -68,7 +63,7 @@ We shall now see some explicit decoding procedures along with making the error t
 
 \subsection{Basic Decoding on Lines}
 
-\begin{bluebox}
+\begin{greybox}
     \begin{proposition}
 Let $\calu,\calv$ be a family of $S$-matching vectors in $\bbz_m^n$,
 with $|\calu| = |\calv| = k$ and $|S| = s$. Suppose $m \mid (q-1)$, where
@@ -76,7 +71,7 @@ $q$ is a prime power. Then there exists a $q$-ary linear code encoding
 $k$-long messages to $m^n$-long codewords that is
 $(s+1,\delta,(s+1)\delta)$-locally decodable for all $\delta$.
 \end{proposition}
-\end{bluebox}
+\end{greybox}
 
 Consider the code specified in Equation~\ref{enc}. Now do the following decoding procedure:
 \begin{enumerate}
@@ -107,11 +102,11 @@ In this section we shall see how we can make the line decoding better to get err
 
 We now give the main proposition of this subsection analogous to Proposition~\ref{improve}.
 
-\begin{bluebox}
+\begin{greybox}
 \begin{proposition}
 Let $0 < \sigma < 1$. Let $\mathcal{U},\mathcal{V}$ be a $\sigma m$-bounded family of $S$-matching vectors in $\mathbb{Z}_m^n$, $|\mathcal{U}| = |\mathcal{V}| = k$. Suppose $m \mid (q-1)$, where $q$ is a prime power. Then there exists a $q$-ary linear code encoding $k$-long messages to $m^n$-long codewords that is $(m,\delta,2\delta/(1-\sigma))$-locally decodable for all $\delta$.
 \end{proposition}
-\end{bluebox}
+\end{greybox}
 
 Consider the same code as before and the following decoding procedure:
 \begin{enumerate}
@@ -131,21 +126,19 @@ Consider the same code as before and the following decoding procedure:
     \end{align*}
 \end{proof}
 
-\begin{greenbox}
-    \begin{observation}[Error Tolerance]
+\begin{observation}[Error Tolerance]
         As $\sigma\downarrow0$, the limiting failure probability is $2\delta$, hence we can only tolerate up to $\delta<1/4$ fraction of errors, because for error tolerance, the failure probability must be less that $1/2$. In the next subsection, we show a decoding paradigm that can tolerate up to $1/2$ fraction of errors.
     \end{observation}
-\end{greenbox}
 
 \subsection{Decoding on Multiple Lines}
 
 Rather than constructing one random multiplicative line, we shall construct more and using the queries at each $M$-evaluation of $F$, we shall interpolate the polynomial.
 
-\begin{bluebox}
+\begin{greybox}
     \begin{proposition}
 Let $0 < \sigma < 1$. Let $\mathcal{U},\mathcal{V}$ be a $\sigma m$-bounded family of $S$-matching vectors in $\mathbb{Z}_m^n$, $|\mathcal{U}| = |\mathcal{V}| = k$. Suppose $m \mid (q-1)$, where $q$ is a prime power. Then for every positive integer $l$ there exists a $q$-ary linear code encoding $k$-long messages to $m^n$-long codewords that for all $\delta < (1-\sigma)/2$ is $(lm,\delta,\exp_{\delta,\sigma}(-l))$-locally decodable.
 \end{proposition}
-\end{bluebox}
+\end{greybox}
 
 Consider the same code as before and fix an $l\in\bbn$. Now here we shall not construct the polynomial like we have do before, we shall consider $l$ many $M$-evaluations of $F$ and instead of interpolating the polynomial directly, we shall assign weight to each field element $e$ with respect to the likelihood of $x(i) = e$. And from that we shall return the unique highest weight field element, if exists. The decoding procedure is the following:
 
@@ -158,11 +151,9 @@ Consider the same code as before and fix an $l\in\bbn$. Now here we shall not co
     \item Return $e$ with the highest weight. If it is not unique, then return $0$.
 \end{enumerate}
 
-\begin{greenbox}
-    \begin{observation}
+\begin{observation}
         Suppose there are two distinct $e_1,e_2\in\bbf_q$ such that $\mathrm{weight}(e_1), \mathrm{weight}(e_2)>lm(1+\sigma)/2$. Then by PHP, there would be two distinct polynomials $h_1, h_2\in\bbf_q[y]$, both of degree less than $\sigma m$ and two multiplicative lines $M_1, M_2$ such that $\mathrm{weight}(e_1,M_1)>m(1+\sigma)/2$ and $\mathrm{weight}(e_2,M_2)>m(1+\sigma)/2$. Now by inclusion-exclusion, the numeber of agreement points of $h_1$ and $h_2$ is at least $2m(1+\sigma)/2 - m = \sigma m$. Thus we can not have such a pair.
     \end{observation}
-\end{greenbox}
 
 \begin{proof}[Proof for failure probability]
     Consider the random variable $X$ denoting the number of corrupted queried points and failure probability is less than or equal to $\Pr[X\geq lm(1+\sigma)/2]$. Note that, 
