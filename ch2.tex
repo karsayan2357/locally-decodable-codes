@@ -120,7 +120,7 @@ Consider the same code as before and the following decoding procedure:
     Take the random variable $X$ denoting the number of corrupted query points in the $M$-evaluation of $F$. Now failure occurs if $X\geq m(1-\sigma)/2$, hence failure probability is less than or equal to:
     \begin{align*}
         \Pr\left[X \geq \frac{m(1-\sigma)}{2}\right]
-        & \leq \frac{1}{m(1-\sigma)/2}\dse[X] \quad \text{[Markov Inequality]}\\
+        & \leq \frac{1}{m(1-\sigma)/2}\E[X] \quad \text{[Markov Inequality]}\\
         & = \frac{1}{m(1-\sigma)/2}\sum_{\lambda\in\bbz_m}\Pr\left[F(g^{\bfw + \lambda\bfv_i})\neq c_{\lambda}\right]\\
         & \leq \frac{2m\delta}{m(1-\sigma)} = \frac{2\delta}{1-\sigma}.
     \end{align*}
@@ -165,7 +165,7 @@ Consider the same code as before and fix an $l\in\bbn$. Now here we shall not co
 
     Now the expected value of $X$ is:
     \begin{align*}
-    \dse[X]
+    \E[X]
     &= \sum_{j = 1}^{l}\left( \sum_{\lambda\in\bbz_m} 
     \Pr[F(g^{(\bfw_j,\bfv_i)}_\lambda)\neq \bfc^j_{\lambda}]
     \right)\\
@@ -175,8 +175,8 @@ Consider the same code as before and fix an $l\in\bbn$. Now here we shall not co
 Now $X$ is the sum of $lm$ many independent and identically distributed Bernoulli random variable of success probability $\delta$. Now we can apply \emph{Chernoff bound}, given in \cite{Alon2000}, in the following way to find an upper bound for failure probability. Using $\delta<(1 - \sigma)/2$,
 \begin{align*}
     \Pr[X\geq lm(1+\sigma)/2] 
-    & \leq \Pr[X - \dse[X] \geq lm(1+\sigma)/2 - lm(1 - \sigma)/2] \\
-    &  = \Pr[X - \dse[X]\geq ml\sigma] \\
+    & \leq \Pr[X - \E[X] \geq lm(1+\sigma)/2 - lm(1 - \sigma)/2] \\
+    &  = \Pr[X - \E[X]\geq ml\sigma] \\
     & \leq \exp_{\sigma, \delta}(-l) \quad \text{Chernoff Bound}. 
 \end{align*}
 \end{proof}

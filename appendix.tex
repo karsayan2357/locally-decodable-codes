@@ -17,3 +17,70 @@
             a^{p-1} \equiv 1 \pmod p.
     \]  
 \end{lemma}
+
+\begin{theorem}[Lucas' Theorem \cite{burton2011}]
+\label{th:lucas}
+Let $p$ be a prime and let $m, n$ be non-negative integers with base-$p$ representations
+$m = \sum_{i} m_i p^i$ and $n = \sum_{i} n_i p^i$. Then
+\[
+\binom{m}{n} \equiv \prod_{i} \binom{m_i}{n_i} \pmod{p}
+\]
+\end{theorem}
+
+
+\begin{lemma}[Schwarz--Zippel]
+\label{app:sz}
+Let $f \in \mathbb{F}[x_1, \ldots, x_n]$ be a non-zero polynomial of total degree $d$ over a field $\mathbb{F}$, and let $S \subseteq \mathbb{F}$ be a finite set. If $r_1, \ldots, r_n$ are chosen independently and uniformly at random from $S$, then:
+\[
+\Pr[f(r_1, \ldots, r_n) = 0] \leq \frac{d}{|S|}.
+\]
+\end{lemma}
+
+\begin{lemma}\label{app:spl_sz}
+Suppose $f \in \mathbb{F}_p[x_1, \ldots, x_n]$, where $p$ is prime, is a multilinear non-zero polynomial of degree at most $d$, where $d > 0$. Then:
+\[
+|\{a \in \{0,1\}^n \mid f(a) = 0\}| \leq 2^n - 2^{n-d},
+\]
+where equality is achieved for $f = \prod_{i=1}^{d} x_i$.
+\end{lemma}
+
+\begin{proof}
+We can prove the lemma by induction on $n$. In the base case, $n = 1$, we have $d = 1$, so $f$ is an expression linear in $x_1$, and thus can have at most one zero, so the inequality holds. Suppose we have shown the inequality holds for polynomials of $n-1$ variables. We show that it also holds for any polynomial $f$ of $n$ variables. We can express $f$ in the following way:
+\[
+f(x_1, \ldots, x_n) = x_1 g(x_2, \ldots, x_n) + h(x_2, \ldots, x_n).
+\]
+Notice that the polynomial $g$ is of degree at most $d-1$. Then, we have:
+\begin{align*}
+|\{a \in \{0,1\}^n \mid f(a) = 0\}| 
+&\leq 2|\{a \in \{0,1\}^{n-1} \mid g(a) = 0\}| + |\{a \in \{0,1\}^{n-1} \mid g(a) \neq 0\}| \\
+&= |\{a \in \{0,1\}^{n-1} \mid g(a) = 0\}| + 2^{n-1} \\
+&\leq 2^{n-1} - 2^{n-1-(d-1)} + 2^{n-1} \\
+&= 2^n - 2^{n-d},
+\end{align*}
+where the first inequality holds because if $g(x_2, \ldots, x_n) \neq 0$, there is exactly one value of $x_1$ for which $f(x) = 0$, but if $g(x_2, \ldots, x_n) = 0$, there might be up to two values of $x_1$ such that $f(x) = 0$. The second inequality holds by the inductive step.
+\end{proof}
+
+\begin{theorem}[Chinese Remainder Theorem for Integer Ring]
+\label{app:crt-int}
+Let $p$ and $q$ be prime numbers with $m = pq$. Then:
+\[
+\mathbb{Z}_m \cong \mathbb{Z}_p \times \mathbb{Z}_q,
+\]
+where the isomorphism $\varphi : \mathbb{Z}_m \to \mathbb{Z}_p \times \mathbb{Z}_q$ is given by
+\[
+\varphi(a) = (a \bmod p,\ a \bmod q).
+\]
+\end{theorem}
+
+\begin{theorem}[Chinese Remainder Theorem for Polynomial Rings]
+\label{app:crt-poly}
+Let $p$ and $q$ be prime numbers with $m = pq$. Then:
+\[
+\mathbb{Z}_m[x_1, \ldots, x_n] \cong \mathbb{Z}_p[x_1, \ldots, x_n] \times \mathbb{Z}_q[x_1, \ldots, x_n],
+\]
+where the isomorphism $\varphi : \mathbb{Z}_m[x_1, \ldots, x_n] \to \mathbb{Z}_p[x_1, \ldots, x_n] \times \mathbb{Z}_q[x_1, \ldots, x_n]$ is given by
+\[
+\varphi(f(x)) = (f(x) \bmod p,\ f(x) \bmod q).
+\]
+This works because a polynomial in $n$ variables modulo some number $t$ is an expression built from sums and products, so $\varphi$ can be applied coefficient-wise.
+\end{theorem}

@@ -116,6 +116,16 @@ urlcolor=urlblue
     leftrule = 6pt
 }
 
+\definecolor{mainblack}{HTML}{000000}   % full black border
+\definecolor{subblack}{HTML}{e0e0e0}    % dark body background
+
+\newtcolorbox{blackbox}{
+    colback = black!5,
+    colframe = mainblack,
+    boxrule = 0pt,
+    leftrule = 6pt
+}
+
 
 %\newtcbtheorem[number within=section]{theorem}{Theorem}{}{theorem}
 
@@ -250,9 +260,10 @@ urlcolor=urlblue
 %% inner prod %%%
 \newcommand{\inp}[2]{\langle #1, #2 \rangle}
 
-%% tensor & xor %% 
+%% o-operation %% 
 \newcommand{\tensor}{\otimes}
 \newcommand{\xor}{\oplus}
+\newcommand{\hprod}{\odot}
 
 %% matrix %%
 \newcommand{\rank}{\mathsf{rank}}
@@ -261,6 +272,9 @@ urlcolor=urlblue
 \newcommand{\E}{\mathds{E}}
 \newcommand{\D}{\mathds{D}}
 \renewcommand{\Pr}{\mathds{P}\mathrm{r}}
+
+%% Random %%
+\newcommand{\OR}{\operatorname{OR}}
 
 
 
