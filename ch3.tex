@@ -1,11 +1,10 @@
 \chapter{Matching Vectors}
 Recall the definition of \emph{matching vectors}, given in Definition~\ref{mvf}. We shall give some combinatorial and algorithmic viewpoint for constructing such matching vector families in this chapter. The main references for this are \cite{bbr1992} and \cite{Grolmusz2000}.
 
-\section{Grolmusz Theorem}
+This chapter shall mainly consist of the construction of an MVF. The main result of \cite{Grolmusz2000} is the following:
 
-This section shall mainly consist of the construction of an MVF as per \cite{Grolmusz2000}. The main result of Grolmusz is the following:
 \begin{blackbox}
-     \begin{theorem}
+     \begin{theorem}[Grolmusz]\label{th:grolmusz}
     Let
     $m = \prod_{i=1}^t p_i$
     be a product of distinct primes. Then there exists an explicit matching vector family in $\bbz_m^l$ of size
@@ -19,7 +18,10 @@ This section shall mainly consist of the construction of an MVF as per \cite{Gro
 \end{theorem}
 \end{blackbox}
 
-Before going to the actual proof of this theorem, we first state some interesting ideas. One of the most important combinatorial question that can arise in one's mind is how large the size of the family can be. The following lemma gives an upper bound on the size of an MVF.
+\section{Degree Analysis of $\OR_n$ Function}
+
+
+Before going to the actual proof of Theorem~\ref{th:grolmusz}, we first state some interesting ideas. One of the most important combinatorial question that can arise in one's mind is how large the size of the family can be. The following lemma gives an upper bound on the size of an MVF.
 
 \begin{greybox}
     \begin{lemma}
@@ -85,7 +87,7 @@ Hence, we see that taking prime power ring, or the field, we get the minimum deg
 In this subsection, we shall show that using $\bbz_6$ as the base ring for the polynomials, we can reduce the degree of $\OR_n$ function to $O(\sqrt{n})$.
 
 \begin{blackbox}
-    \begin{theorem}\label{th:bbr}[Barrington-Beigel-Rudich]
+    \begin{theorem}[Barrington-Beigel-Rudich]\label{th:bbr}
         There exists an $n$-variate polynomial that represents $\OR_n$ modulo $6$ with degree at most $O(\sqrt{n})$.
     \end{theorem}
 \end{blackbox}
@@ -110,7 +112,24 @@ because $\|\bfa\|\leq n$. And to see the degree of $f$, note that $\deg f\leq \m
     \end{lemma}
 \end{greybox}
 \begin{proof}
-    shall add later ... :)
+    We shall use Theorem~\ref{app:crt-poly} to show this. Let $w = \|\bfa\|$ with $(w_0,w_1,\ldots)$ as the $p$-ary expansion of $w$. Consider the function $f(\bfa) = \prod_i(1 - w_i^{p-1}) - 1 \pmod p $, so that $f(\bfa) = 0$ if and only if $\bfa = 0$, this is because $f(\bfa) = 0$ if and only if $w_i = 0$ for all $i$. Now the next question is if we can write this $w_j(\bfa)$ as a polynomial in $\bfa_1,\ldots,\bfa_n$. Note that by Theorem~\ref{app:lucas} for all $j$, 
+    \begin{align*}
+        \binom{w}{p^j} 
+        & \equiv \binom{w_j}{1}\prod_{r\neq j}\binom{w_r}{0} \pmod{p}\\
+        & = w_j.
+    \end{align*}
+
+    So we can re-write the function as $f(\bfa) = \prod_i\left(1 - {\binom{w}{p^j}}^{p-1}\right) - 1\pmod p$. And one possible candidate for this $\binom{w}{p^j}$ is the multilinear polynomial $\Sym_{p^j}(\bfx)$ defined for any $\bfx\in\bbz_p$ as:
+    \[
+       \Sym_{p^j}(\bfx) = \sum_{\substack{I\subseteq[n]\\|I| = p^j}}\prod_{j\in I}x_j.
+    \]
+    Now observe that $\Sym(\bfa) = \binom{w}{p^j}$, thus one possible candidate polynomial in $\bbz_p[x_1,\ldots,x_n]$ is:
+
+    \[
+        f_p^d(\bfx) = \prod_{i=0}^{d-1}\left(1 - {\Sym_{p^j}(\bfx)}^{p-1}\right) - 1.
+    \]
+
+    Degree of this polynomial is at most $\sum_0^{d-1}p^j(p-1) = p^d-1$ and it represents $\OR_n$.
 \end{proof}
 
 Now we can prove Theorem~\ref{th:bbr} formally.
@@ -118,13 +137,13 @@ Now we can prove Theorem~\ref{th:bbr} formally.
 \begin{proof}[Proof of Theorem~\ref{th:bbr}]
   Take $d$ and $e$ such that $\sqrt{n} < 2^d \leq 2\sqrt{n}$ and $\sqrt{n} < 3^e \leq 3\sqrt{n}$. By Lemma~\ref{lem:prime poly}, there are two polynomials $f_2 \in \mathbb{Z}_2[x_1, \ldots, x_n]$ and $f_3 \in \mathbb{Z}_3[x_1, \ldots, x_n]$ such that $\deg(f_2) \leq 2^d - 1$, $\deg(f_3) \leq 3^e - 1$, and
 \[
-f_2(a) = 0 \iff \|a\| \equiv 0 \pmod{2^d}, \qquad f_3(a) = 0 \iff \|a\| \equiv 0 \pmod{3^e}.
+f_2(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{2^d}, \qquad f_3(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{3^e}.
 \]
-Now by Theorem~\ref{app:crt-poly}, $f = (f_2, f_3) \in \mathbb{Z}_6[x_1, \ldots, x_n]$ has degree at most $\max(\deg(f_2), \deg(f_3))$, which is at most $3\sqrt{n}$, and $f(a) = 0$ if and only if $\|a\| \equiv 0 \pmod{2^d 3^e}$. Since $2^d 3^e > n$, we have $\|a\| \equiv 0 \pmod{2^d 3^e}$ if and only if $\|a\| = 0$ if and only if for all $ i \in [n],\ a_i = 0$. So $f(a) = 0$ if and only if for all $ i \in [n],\ a_i = 0$.
+Now by Theorem~\ref{app:crt-poly}, $f = (f_2, f_3) \in \mathbb{Z}_6[x_1, \ldots, x_n]$ has degree at most $\max(\deg(f_2), \deg(f_3))$, which is at most $3\sqrt{n}$, and $f(\bfa) = 0$ if and only if $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$. Since $2^d 3^e > n$, we have $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$ if and only if $\|\bfa\| = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$. So $f(\bfa) = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$.
 \end{proof}
 
 \section{Construction of MVF}
 
- 
+
 
 
