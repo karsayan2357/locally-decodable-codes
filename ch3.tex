@@ -144,6 +144,46 @@ Now by Theorem~\ref{app:crt-poly}, $f = (f_2, f_3) \in \mathbb{Z}_6[x_1, \ldots,
 
 \section{Construction of MVF}
 
+Now we have built pretty much all the machinery needed to prove Theorem~\ref{th:bbr}. The version of this theorem for modulo $6$ is the following:
+\begin{blackbox}
+    \begin{theorem}\label{th:baby-bbr}
+        For any $l\in\bbn$, there exists a matching vector family in $\bbz_6^l$ of size $l^{C\log l/(\log\log l)^2}$, where $C = 1/81$.   
+    \end{theorem}
+\end{blackbox}
 
+\begin{proof}
+    Start with an arbitrary $h\in\bbn$ that will be decided later precisely. Now take two boolean strings $\bfa$ and $\bfb$ of size $h$. By Theorem~\ref{th:baby-bbr}, there exists a polynomial in $\bbz_6[x_1,\ldots,x_h]$ that represents $\OR_h$ modulo $6$ of degree $d = O(\sqrt{n})$. For a fixed $\bfb$, define $g_{\bfb}\in\bbz_6[x_1,\ldots,x_h]$ such that $g_{\bfb}(\bfx) = f\left((\bfb-\bfx)\hprod(\bfb-\bfx)\right)$. Observe that,
+    \[
+        g_{\bfb}(\bfa) \begin{cases} = 0 \pmod{6} & \text{if } \bfa = \bfb \\ \neq 0 \pmod{6} & \text{if } \bfa \neq \bfb. \end{cases}
+    \]
 
+    We shall now try to construct a matching vector with these $2^h$ many kind of matching vector family of $\calg = \{g_{\bfb}\}_{\bfb\in\{0,1\}^h}$ and $\cala = \{\bfa\}_{\{0,1\}^h}$. The following lemma helps us constructing an MVF in $\bbz_6^l$ of size $\binom{h+d}{d}$.
 
+\begin{greybox}
+    \begin{lemma}
+\label{lem:poly-match}
+$\calg$ and $\cala$ yields $\bbz_6$-matching in $\bbz_6^{\binom{h+d}{d}}$ of size $2^h$.
+\end{lemma}
+\end{greybox}
+
+\begin{proof}
+We define the vector $\bfu_{\bfb}$ to be the $\binom{h+d}{d}$-dimensional vector of coefficients of the polynomial $g_{\bfb}$. Similarly, for $\bfa\in\{0,1\}^h$, we define the vector $\bfv_{\bfa}$ to be the vector of evaluations of monomials at the point $\bfa$. It is easy to check that for all $\bfa,\bfb \in \{0,1\}^h$,
+\[
+\inp{\bfu_{\bfb}}{\bfv_{\bfa}} = g_{\bfb}(\bfa),
+\]
+and hence the sets $U, V$ indeed form an $\bbz_6$-matching family.
+\end{proof}
+
+Set $h$ such that $l = \binom{h+d}{d}\leq (2h)^d\leq(2h)^{3\sqrt{h}}$. Now it is enough to show $ h \geq C\log^2 l/\log^2 \log l$.
+This follows directly from the following calculations:
+\begin{align*}
+ \frac{C\log^2 l}{\log^2 \log l} 
+&\leq \frac{\left(3\sqrt{h} \log(2h)\right)^2}{81 \log^2\left(3\sqrt{h} \log(2h)\right)} \\
+&\leq \frac{9h \log^2(2h)}{81 \log^2(\sqrt{h})} \\
+&= \frac{h \left(2\log(\sqrt{h}) + 1\right)^2}{9 \log^2(\sqrt{h})} \\
+&\leq \frac{9h \log^2(\sqrt{h})}{9 \log^2(\sqrt{h})} \\
+&= h
+\end{align*}
+\end{proof}
+
+This proof can be generalized to modulo $m$ for any $m \left(= \prod_i^t p_i\right)$ which is a product of distinct primes by setting the prime powers $p_i^{e_i}$ used in the construction to be greater than $n^{1/t}$ and at most $p_i n^{1/t}$ and use the generalized Chinese Remainder Theorem.
