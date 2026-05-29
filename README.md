@@ -1,1 +1,1 @@
-# Locally Decodable Codes Scribe
+# LOCALLY DECODABLE CODES
