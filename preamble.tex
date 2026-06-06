@@ -44,9 +44,14 @@ citecolor=citegreen,
 urlcolor=urlblue
 ]{hyperref}
 \usepackage{enumerate}
-%\fancyhf{}
-%\fancyhead[C]{\bfseries\textsf{LDC}}
-%\fancyfoot[C]{\thepage}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headruleskip}{3pt}
+\fancyhead[LE]{%
+  \small\scshape\thesection\enspace\leftmark}
+\fancyhead[RO]{%
+  \small\scshape\rightmark}
+\fancyhead[RE,LO]{\small\thepage}
 
 %\usepackage[
 %backend=biber,
@@ -158,12 +163,14 @@ urlcolor=urlblue
 
 \usepackage{titlesec}
 
-\titleformat{\chapter}[block]
-{\normalfont\Huge\bfseries}
-{\makebox[0pt][l]{\Huge Chapter \thechapter}}
-{0pt}
-{\hfill\Huge\textsc}
-[\vspace{0.8ex}\titlerule]
+\titleformat{\chapter}[display]
+  {\normalfont\scshape\bfseries}
+  {\Large\chaptertitlename\ \thechapter}{0pt}{\huge}[\vspace{0.5ex}{\color{gray!60}\hrule}]
+  
+\titlespacing*{\chapter}
+  {0pt}     % left margin
+  {50pt}    % space before
+  {40pt}    % space after
 
 
 %%%% ABSTRACT %%%%%
@@ -278,6 +285,10 @@ urlcolor=urlblue
 \newcommand{\Sym}{\operatorname{Sym}}
 \newcommand{\supp}{\operatorname{supp}}
 
+%% big-oh %%
+\renewcommand{\O}{\mathcal{O}}
+\renewcommand{\o}{\mathcal{o}}
+\newcommand{\tO}{\tilde{\mathcal{O}}}
 
 
 

@@ -1,0 +1,50 @@
+\chapter{Private Information Retrieval}
+\label{ch:pir}
+
+Private Information Retrieval schemes were first introduced in the paper \cite{pir-sudan}. This chapter will consist of the PIR scheme described in \cite{improved-pir}.
+
+\section{Introduction}
+
+In a $k$-server Private Information Retrieval (PIR) scheme, a user wishes to retrieve the $i$-th bit $a_i$ of an $n$-bit database $\bfa = (a_1, \ldots, a_n) \in \{0,1\}^n$,
+which is replicated among $k$ non-communicating servers, without revealing any
+information about the index $i$ to any individual server.
+The central goal in the study of PIR schemes is to minimize the \emph{communication cost}, defined as the worst-case total number of bits exchanged between the user and the servers over the course of the protocol.
+The trivial solution, which works even with a single server, is to have the server transmit the entire database $\bfa$ to the user; this achieves correctness and perfect privacy, but at the high cost of $n$ bits of communication. A fundamental question is therefore: \emph{can we do better}?
+
+Before moving forward let me define formally what a PIR scheme is:
+\begin{definition}[PIR Scheme]
+
+    A one-round $t$-server PIR protocol involves $t$ servers $S_1, \ldots, S_t$, each holding
+the same $n$-bit database $\bfa = (a_1, \ldots, a_n) \in \{0,1\}^n$, such that
+these servers do not communicate with each other, and there is a user $\calu$
+who knows $n$ and wishes to retrieve some bit $a_i$ for $i \in [n]$, without revealing
+the index $i$. The protocol consists of a randomized algorithm for the user and $t$
+deterministic algorithms for the servers, satisfying the following:
+
+\begin{enumerate}
+    \item On input $i \in [n]$, the user $\calu$ samples a random string $\mathsf{rand}$,
+    produces $t$ queries $q_1, \ldots, q_t$, and sends query $q_j$ to server $S_j$.
+
+    \item Each server $S_j$ computes a response $r_j = S_j(\bfa, q_j)$ and sends
+    it back to the user.
+
+    \item The user, given $i$, $\mathsf{rand}$, and responses $r_1, \ldots, r_t$,
+    reconstructs $a_i$.
+\end{enumerate}
+
+\noindent The protocol must satisfy the following two conditions:
+
+\begin{itemize}
+    \item \textbf{Correctness:} For any database $\bfa \in \{0,1\}^n$ and any
+    index $i \in [n]$, the user outputs $a_i$ with probability $1$, where the
+    probability is taken over the random string $\mathsf{rand}$.
+
+    \item \textbf{Privacy:} Each server individually learns nothing about the queried
+    index $i$. Formally, for any server $S_j$ and any two indices $i_1, i_2 \in [n]$,
+    the distributions of $q_j(i_1, \mathsf{rand})$ and $q_j(i_2, \mathsf{rand})$ over
+    the randomness $\mathsf{rand}$ are identical.
+\end{itemize}
+    
+\end{definition}
+
+For $1$-server PIR scheme, we can not do better than $n$ communication cost as if we have less than $n$ bits of communication, then there would be two indices for which we may have the same message from the server. In \cite{pir-sudan}, we have a $2$-server PIR scheme with $\O(n^{1/3})$ and $3$-server PIR scheme with $\O(n^{1/2})$ communication cost. Then in \cite{efr09}, we have a communication $2^{\tO(\sqrt{\log n})}$ for $3$-server PIR scheme.
