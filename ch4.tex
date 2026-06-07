@@ -47,4 +47,37 @@ deterministic algorithms for the servers, satisfying the following:
     
 \end{definition}
 
-For $1$-server PIR scheme, we can not do better than $n$ communication cost as if we have less than $n$ bits of communication, then there would be two indices for which we may have the same message from the server. In \cite{pir-sudan}, we have a $2$-server PIR scheme with $\O(n^{1/3})$ and $3$-server PIR scheme with $\O(n^{1/2})$ communication cost. Then in \cite{efr09}, we have a communication $2^{\tO(\sqrt{\log n})}$ for $3$-server PIR scheme.
+For $1$-server PIR scheme, we can not do better than $n$ communication cost as if we have less than $n$ bits of communication, then there would be two indices for which we may have the same message from the server. In \cite{pir-sudan}, we have a $2$-server PIR scheme with $\O(n^{1/3})$ and $3$-server PIR scheme with $\O(n^{1/2})$ communication cost. Then in \cite{efr09}, we have a communication $2^{\tO(\sqrt{\log n})}$ for $3$-server PIR scheme.  
+
+
+\section{A Basic PIR Scheme}\label{sec:basic-pir}
+
+The following PIR Scheme will give us a $\O(n^{1/2})$ communication with $3$ servers. If $\bfa\in\bbf^n \equiv \bbf^{\binom{k}{2}}$ is our database and user wants $\bfa_{\tau}$, then it equivalent to construct a polynomial $F\in\bbf[x_1,\ldots,x_k]$ defined as:
+
+\[
+    F(x_1,\ldots, x_k) = \sum_{i,j} a_{ij}X_iX_j.
+\]
+For some re-design of the indexing set and have the user find a suitable $a_{ij}$ such that it equals $a_{\tau}$, by giving the evaluation of $F$ at $(0,\ldots,1,\ldots,1,\ldots,0)$, with $1$ only appearing in $i$ and $j$-th coordinates. 
+
+We generalize this problem in the given PIR scheme and solve it via $3$-servers and $\O(n^{1/2})$ communication.
+
+\subsection*{PIR Scheme}
+
+Suppose for an $\bfx\in\bbf^k$, the user wants $F(\bfx)$ and the servers has the polynomial $F$. 
+
+\begin{enumerate}
+    \item Pick $\bfy\in\bbf^k$ uniformly at random. 
+    \item Consider the curve $C(Z) = \bfx + X\bfy$.
+    \item Consider the restriction $A(Z) = F(C(Z)) = F(\bfx + Z\bfy)$ of $F$ on this curve, notice that $\deg A = 2$. 
+    \item For $i\in[3]$, ask server $i$ to return $A(i)$ to the user.
+    \item Interpolate $A$ using $A(1), A(2)$ and $A(3)$.
+    \item Return $A(0)$.
+\end{enumerate}
+
+The correctness of the PIR scheme is easy to observe. And we send $k$-bit information to each server and receive $1$-bit information from each server. Thus in total the communication cost is $\O(k) = \O(n^{1/2})$ as $n = \binom{k}{2}$.
+
+\section{PIR Scheme of \cite{improved-pir}}
+
+The PIR scheme described in Section~\ref{sec:basic-pir} is the main idea behind all the PIR schemes that are to come. We pick a random curve in a space and restrict the polynomial(not exactly the same as in Section~\ref{sec:basic-pir}) to that curve and try to interpolate the polynomial, if the entire polynomial can not be interpolated(which will be the case), then we shall try to interpolate the value of the polynomial at $0$ only. 
+
+PIR schemes using matching vectors were introduced in \cite{yek08-3ldc} and \cite{efr09}. 
