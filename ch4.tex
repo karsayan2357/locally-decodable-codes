@@ -67,7 +67,7 @@ Suppose for an $\bfx\in\bbf^k$, the user wants $F(\bfx)$ and the servers has the
 
 \begin{enumerate}
     \item Pick $\bfy\in\bbf^k$ uniformly at random. 
-    \item Consider the curve $C(Z) = \bfx + X\bfy$.
+    \item Consider the curve $C(Z) = \bfx + Z\bfy$.
     \item Consider the restriction $A(Z) = F(C(Z)) = F(\bfx + Z\bfy)$ of $F$ on this curve, notice that $\deg A = 2$. 
     \item For $i\in[3]$, ask server $i$ to return $A(i)$ to the user.
     \item Interpolate $A$ using $A(1), A(2)$ and $A(3)$.
@@ -80,4 +80,113 @@ The correctness of the PIR scheme is easy to observe. And we send $k$-bit inform
 
 The PIR scheme described in Section~\ref{sec:basic-pir} is the main idea behind all the PIR schemes that are to come. We pick a random curve in a space and restrict the polynomial(not exactly the same as in Section~\ref{sec:basic-pir}) to that curve and try to interpolate the polynomial, if the entire polynomial can not be interpolated(which will be the case), then we shall try to interpolate the value of the polynomial at $0$ only. 
 
-PIR schemes using matching vectors were introduced in \cite{yek08-3ldc} and \cite{efr09}. 
+PIR schemes using matching vectors were introduced in \cite{yek08-3ldc} and \cite{efr09}. A very detailed and well-written flow of improvement of the PIR schemes throughout the years can be found in \cite{improved-pir}. But we shall only see and explore the improvement done by the very paper. 
+
+But before going to the actual explicit PIR scheme, we need to be familiar with some ideas required for the scheme to make sense and implement.
+
+Suppose the database here is $\bfa\in\bbf^n$ and the user wants $a_{\tau}$. Also $(\bfu_1,\bfv_1),\ldots,(\bfu_n,\bfv_n)$ is an $S$-matching vector family in $\bbz_m^k$ for some positive integer $m$. Now the servers make the polynomial $F(\bfX)\in\bbf[X_1,\ldots,X_k]$ as follows:
+
+\[
+    F(\bfX) = \sum_{i = 1}^{n} a_i\bfX^{\bfu_i} = \sum_{i = 1}^{n}a_i X_1^{u_{i1}}\cdots X_k^{u_{ik}}.
+\]
+
+We shall deal with the restriction of this polynomial throughout the chapter. Also we choose the characteristic $p$ field $\bbf$ such that it contains all the $m$-th root of unity.
+
+We first construct the random curve $C(Z)$ by first choosing $\bm{\beta}$ uniformly at random and considering $C(Z) = \bm{\beta}\hprod Z^{\bfv_{\tau}}$. Then consider the univariate polynomial $A(Z) = F(C(Z))$, but $\deg(A) = \O(k\cdot m^2)$. So to reduce it, we do $A_1(Z) = A(Z) \pmod{Z^m - 1}$. Observe that $A_1$ is of the form: 
+\[
+    A_1(Z) = a_{\tau}\bm{\beta}^{\bfu_{\tau}} + \sum_{\substack{s\in S \\ s \neq 0}} w_s Z^s.
+\]
+
+So to get $a_{\tau}$, it is enough to know $A_1(0)$. We shall try to interpolate $A_1$ at $0$ in the following sections. 
+
+\subsection{Preliminaries}
+
+We shall be doing the interpolation in the regime using \emph{$S$-mathcing vector families} and \emph{$S$-decoding polynomials}, or the SMVF+SSD framework. We have already seen SMVF before in Chapter~\ref{ch:mvc}, let us define what SSD is.
+
+\begin{definition}[$S$-decoding Polynomials]
+    Let $S \subseteq \mathbb{Z}_m$ be a set containing $0$. Let $\bbf$ be a field containing an element $\gamma_m$ which is a primitive $m$'th root of $1$. A polynomial $P(Z) \in \bbf[Z]$ is called an \textit{S-decoding polynomial} if the following conditions hold:
+\begin{itemize}
+    \item $\forall s \in S \setminus \{0\}: P(\gamma_m^s) = 0$
+    \item $P(\gamma_m^0) = P(1) = 1$
+\end{itemize}
+\end{definition}
+
+Now we can state the main theorem that is the result of \cite{improved-pir}, which improves the communication and server trade-off.
+
+\begin{definition}[Canonical Set]
+    Let $m\in\bbn$, we define \emph{canonical set} for $m$ to be:
+    \[
+        S = \{x\in\bbz_m : x^2 \equiv x\pmod m\}.    
+    \] 
+\end{definition}
+
+The following is the main result that we shall prove in the coming sections.
+
+\begin{blackbox}
+    \begin{theorem}[\cite{improved-pir}]
+        Let $m$ be a positive integer with $r$ distinct prime factors, and let $p$ be a prime not dividing $m$.
+Suppose $\bbf$ is a field of characteristic $p$ such that, for $S^* \subseteq \mathbb{Z}_m$ being the canonical set for $m$, there is an $S^*$-decoding polynomial over $\bbf$ with sparsity $\leq t$.
+Then there is a $t$-server PIR scheme with communication $\exp\left(\tO\left((\log n)^{\frac{1}{r+1}}\right)\right)$.
+    \end{theorem}
+\end{blackbox}
+
+This is a direct improvement of the result of \cite{efr09}, which is:
+
+\begin{blackbox}
+    \begin{theorem}[\cite{efr09}]
+        Let $m$ be a positive integer with $r$ distinct prime factors, and let $p$ be a prime not dividing $m$.
+Suppose $\bbf$ is a field of characteristic $p$ such that, for $S^* \subseteq \mathbb{Z}_m$ being the canonical set for $m$, there is an $S^*$-decoding polynomial over $\bbf$ with sparsity $\leq t$.
+Then there is a $t$-server PIR scheme with communication $\exp\left(\tO\left((\log n)^{\frac{1}{r}}\right)\right)$.
+    \end{theorem}
+\end{blackbox}
+
+
+Following is the table of improvement over \cite{efr09} and \cite{dvir-gopi} over communication of the form $\exp\left(\tO\!\left((\log n)^{1/c}\right)\right)$ for positive integers $c$. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Total communication & \# servers for \cite{improved-pir} & \# servers for \cite{dvir-gopi} & \# servers for \cite{efr09} \\
+\hline
+$\exp(\tO((\log n)^{1/2}))$ & 2   & 2   & 3   \\
+$\exp(\tO((\log n)^{1/3}))$ & 3   & 4   & 8   \\
+$\exp(\tO((\log n)^{1/4}))$ & 8   & 8   & 9   \\
+$\exp(\tO((\log n)^{1/5}))$ & 9   & 16  & 24  \\
+$\exp(\tO((\log n)^{1/6}))$ & 24  & 32  & 27  \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Hasse Derivatives}
+    \begin{definition}[Hasse Derivatives]
+        For a multivariate polynomial $F(\bfX) \in \bbf[\bfX]$ and a non-negative integer vector $\bfi = (i{(1)}, \ldots, i{(k)})$, we denote the \emph{$\bfi$-th Hasse derivative} of $F$ by $F^{(\bfi)}(X)$, and it is the coefficient of $\bfY^{\bfi}$ in the polynomial $F(\bfX + \bfY) \in \bbf[\bfX, \bfY]$. Therefore, we have,
+
+\[F(\bfX + \bfY) = \sum_{\bfi} F^{(\bfi)}(\bfX)\, \bfY^{\bfi}.\]
+    \end{definition}
+
+We use the notation $F^{(<m)}(\bfa)$ to be the vector of all the evaluations of the $\bfi$-th Hasse derivative of $F$ at point $\bfa$ for all vectors $\bfi$ such that $\wt(\bfi) < m$. We note that Hasse derivatives are just a simple scaling of standard iterated derivatives whenever the order of derivative is smaller than the characteristic of the field. In particular, for the univariate polynomial $A(Z) = Z^s$, we have a simple formula for the Hasse derivative:
+
+$$A^{(j)}(Z) = \binom{s}{j} Z^{s-j}.$$
+
+Now the following facts about hasse derivatives are essential for interpolating $A_1()$ from its derivatives.
+
+\begin{itemize}
+    \item Let $A(Z) \in \mathbb{F}[Z]$ be a univariate polynomial, and let $b \in \mathbb{F}$. Then knowing $A(Z) \bmod (Z-b)^m$ is exactly equivalent to knowing $A^{(<m)}(b)$. Concretely, given $A^{(<m)}(b)$ we can construct the polynomial
+    $$A^*(Z) = \sum_{i=0}^{m-1} A^{(i)}(b)(Z-b)^i,$$
+    which is easily seen to be the remainder of $A(Z) \bmod (Z-b)^m$. This connection goes in the other direction too.
+
+    \item \textbf{Chain rule:} Suppose $F(X_1, \ldots, X_k) \in \bbf[X_1, \ldots, X_k]$ is a multivariate polynomial and $C = (P_1(Z), \ldots, P_k(Z))$ is a tuple of univariate polynomials in the single variable $Z$. Denote their composition by the polynomial $A(Z) = F(C(Z))$. Then, the $i$-th Hasse derivative of $A$, $A^{(i)}$, can be expressed as a polynomial in $F^{(\bfj)}(C(Z))$ for $\wt(\bfj) \leq i$ and $P_t^{(j)}(Z)$ for $1 \leq t \leq k,\, j \leq i$.
+\end{itemize}
+
+\subsection{$0$-interpolation Property}
+
+
+\subsection{The PIR Scheme}
+
+We need the following things for the PIR scheme to be useful:
+
+\begin{itemize}
+    \item $m\in\bbn$ that is a product of $r$ distinct primes and a prime $p$ not dividing $m$. 
+    \item 
+\end{itemize}
