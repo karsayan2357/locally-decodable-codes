@@ -1,191 +1,186 @@
-\chapter{Matching Vectors}
-\label{ch:mvf}
+\chapter{Matching Vector Codes}
+\label{ch:mvc}
 
-Recall the definition of \emph{matching vectors}, given in Definition~\ref{mvf}. We shall give some combinatorial and algorithmic viewpoint for constructing such matching vector families in this chapter. The main references for this are \cite{bbr1992} and \cite{Grolmusz2000}.
+\section{Introduction}
 
-This chapter shall mainly consist of the construction of an MVF. The main result of \cite{Grolmusz2000} is the following:
+In the RM codes seen in Chapter~\ref{ldc}, we could do local correction upto $\delta<1/4$ fraction of error tolerance. Our main goal of this chapter would be to construct a code that can tolerate upto $\delta<1/2$ fraction of errors, which would be optimal for unique local decoding.
 
-\begin{blackbox}
-     \begin{theorem}[Grolmusz]\label{th:grolmusz}
-    Let
-    $m = \prod_{i=1}^t p_i$
-    be a product of distinct primes. Then there exists an explicit matching vector family in $\bbz_m^l$ of size
-    \[
-    k = \exp\left(
-        \Omega\left(
-            \frac{(\log l)^t}{(\log\log l)^{t-1}}
-        \right)
-    \right).
-    \]
-\end{theorem}
-\end{blackbox}
+We first define what \emph{matching vectors} are, then we can specify the encoding of \emph{matching vector code}.
 
-\section{Degree Analysis of $\OR_n$ Function}
-
-
-Before going to the actual proof of Theorem~\ref{th:grolmusz}, we first state some interesting ideas. One of the most important combinatorial question that can arise in one's mind is how large the size of the family can be. The following lemma gives an upper bound on the size of an MVF.
-
-\begin{greybox}
-    \begin{lemma}
-        If $p$ is a prime, then any MVF in $\bbz_m^l$ has size at most $1 + l^{p-1}$. 
-    \end{lemma}
-\end{greybox}
-\begin{proof}
-    Let $\calu, \calv$ be a MVF in $\bbz_p^l$ of size $k$. Consider the matrix $A\in\bbz_p^{k\times k}$ with $A_{i,j} = \inp{\bfu_i}{\bfv_j}$. By \emph{Fermat's Little Theorem}, Lemma~\ref{app:fermat} in Appendix~\ref{app}, we observe that $A_{i,j}^{p-1} = 1$ for all $i,j$. Observe, $A^{p-1} = J_k - I_k$, hence $\rank(A^{p-1})\leq k-1$ and $\rank(A^{p-1}) \leq \rank(A)^{p-1} \leq l^{p-1}$, by Lemma~\ref{app:matrix power}. 
-\end{proof}
-
-
-\subsection{Polynomial Representation of OR-function in $\mathrm{mod }$ $6$}
-
-\begin{definition}[OR Function]
-    $n$-variate OR function, denoted as $\OR_n$, is a boolean function defined as:
-    \[
-    \OR_n(x_1,\ldots,x_n) = 0 \text{ if and only if } x_i = 0 \text{ for all } i\in[n].
-    \]
+  \begin{definition}[Matching Vectors]\label{mvf}
+    Let $S\subseteq\bbz_{m}^n$, we say that the families $\calu = \{\bfu_1, \ldots, \bfu_k\}$ and $\calv = \{\bfv_1,\ldots, \bfv_k\}$ of vectors in $\bbz_m^n$ forms an $S$-\emph{matching family} if 
+    \begin{enumerate}
+        \item For all $i\in[k], (\bfu_i, \bfv_i) = 0$, 
+        \item For all $i\neq j$ in $[k]$, $(\bfu_j, \bfu_i) \in S$.
+    \end{enumerate}
 \end{definition}
+\begin{observation}
+        Let $g$ be a generator of the unique subgroup $C_m$ of $\bbf_q^*$ of size $m$. Then for any $\bfu,\bfv,\bfw\in\bbz_m^n$ and $\lambda\in\bbz_m$, 
+        \begin{align*}
+            \mon_{\bfu}(g^{w+\lambda v}) 
+            & = \prod_{l=1}^n \left( g^{\bfw(l) + \lambda \bfv(l)} \right)^{\bfu(l)} \\
+            & = \prod_{l=1}^n g^{\bfw(l)\bfu(l)}\cdot\prod_{l=1}^n(g^{\lambda})^{\bfv(l)\bfu(l)} \\
+            & = g^{(\bfu, \bfw)}\cdot (g^{\lambda})^{(\bfv, \bfu)}.
+        \end{align*}
+        So we can see that $M_{\bfw, \bfv}$-evaluation of $\mon_{\bfu}$ is a $C_m$-evaluation of a univariate polynomial $g^{(\bfu, \bfw)}\cdot y^{(\bfv, \bfu)}\in\bbf_q[y]$.
+    \end{observation}
 
-We shall now study some polynomial ``representative''(s) of this OR function. 
-
-
-\begin{definition}
-    A polynomial $g \in \mathbb{Z}_m[x_1, \ldots, x_n]$ \emph{represents} a boolean function $f : \{0,1\}^n \to \{0,1\}$ mod $m$ if for all $ \bfx \in \{0,1\}^n,$
-\[
- g(\bfx) 
-\begin{cases} 
-= 0 \pmod{m} & \text{if } f(\bfx) = 0 \\ 
-\neq 0 \pmod{m} & \text{if } f(\bfx) = 1 
-\end{cases}
-\]
-
-And the \emph{degree} of the boolean function $f$ modulo $p$, denoted as $\deg_p(f)$, is defined as $ \min\{\deg(g) : g \text{ represents $f$ modulo $p$}\}$.
-\end{definition}
-
-The following lemma shall give the main motivation behind the study of representative polynomials modulo a composite number with at least two distinct prime factors, instead of a prime power, or equivalently, shifting our focus from fields to rings!
+Now we define the encoding of matching vector codes, but we first need to assume that there exists an $S$-matching family $\calu$ and $\calv$ of size $k$. We shall deal with this existence later. There is also an abstract decoding method mentioned that will be the main motivation behind all the decoding procedure in the coming sections.
 
 \begin{greybox}
-    \begin{lemma}\label{why no prime}
-        If $p$ is a prime, then $\deg_p(\OR_n)\geq n/(p-1)$. 
-    \end{lemma}
+   \paragraph{\large (\textsc{Encoding})} We take a $k$-length message $\bfx=(\bfx(1), \ldots, \bfx(k))\in\bbf_q^k$ and encode ot by $C_m^n$-evaluations of the polynomial 
+   \begin{equation}  \label{enc}
+   F_{\bfx}(z_1,\ldots,z_n) = \sum_{j=1}^{k} x(j)\mon_{u_j}(z_1,\ldots,z_n).
+\end{equation}
+  
+
+    \paragraph{\large (\textsc{Abstract Decoding})} We want to retrieve $\bfx(i)$ for a specified index $i\in[k]$. The decoding procedure is:
+    \begin{enumerate}
+        \item Pick $\bfw\sim\mathrm{Unif}(\bbz_m^n)$. 
+        \item Compute the restriction of $F \equiv F_{\bfx}$ to $M_{\bfw, v_i}$ by some queries of the corrupted $M_{w,v_i}$-evaluation of $F$ at less than or equal to $m$ points.
+    \end{enumerate}
 \end{greybox}
 
-\begin{proof}
-    Let $g$ be a polynomial representative of $\OR_n$ in $\bbf_p$, i.e., $\OR_n(\bfa) = 0$ if and only if $g(\bfa) = 0 \pmod p$. Notice that as we are working $\bbf_p$, we can transform $g$ to make it behave like a boolean function in $\bbf_p$. Consider the polynomial $h(\bfx) = 1 - g^{p-1}(\bfx)$. Now notice that as we are in $\{0,1\}^n$, we can make this $h$ multilinear, say $\tilde{h}$. Observe, by Lemma~\ref{app:fermat}, $\tilde{h}(\bfa) = 1$ at $\mathbf{0}$ and $0$ everywhere else. Also by $Lemma~\ref{app:spl_sz}$, we get that:
-    \[
-        2^n - 1 = |\{\bfa\in\{0,1\}^n : \tilde{h}(\bfa) = 0\}| \leq 2^n - 2^{n - \deg\tilde{h}}.
-    \]
+One might ask now that what is the importance of this restriction and how it will help in retrieving $\bfx(i)$. The following observation gives us the motivation of using matching family and this second step.
 
-    Hence, $\deg\tilde{h}\geq n$ and with that we get our final bound:
+\begin{observation}
+        The $M_{w,v_i}$-evaluation of $F$ is equivalent to the $C_m^n$-evaluation of the polynomial $f$ defined as:
 
-    \[
-        n\leq\deg\tilde{h}\leq\deg h\leq (p-1)\deg g.
-    \]
-\end{proof}
+        \[
+            f(y) = \sum_{j=1}^{k} x(j) g^{(\bfu_j, \bfw)}\cdot y^{(\bfv_i, \bfu_j)}
+        \]
 
-Also note we can extend Lemma~\ref{why no prime} to prime powers, the only difference that would rise it taken care by Lemma~\ref{app:fermat}. 
-Hence, we see that taking prime power ring, or the field, we get the minimum degree to be $\Omega(n)$ but \cite{bbr1992} showed that for \emph{product of distinct primes} size ring, we can get much smaller degree representative polynomials. We shall only see the proof of BBR theorem for modulo $6$ but this can be extended to any $m$ that is a product of distinct primes with the same principles used in the following proof. 
+        By matching family property, we can write the polynomial as:
+        \[
+            f(y) = x(i)g^{(\bfu_i, \bfv_i)} + \sum_{s\in S} \left(\sum_{j : (\bfu_j, \bfv_i) = s} x(j)g^{(\bfu_j, \bfv_i)} \right)y^s.
+        \]  
 
-\subsection{Barrington-Beigel-Rudich Theorem}
+        So we can get $\bfx(i)$ by just computing $f(0)/g^{(\bfu_i, \bfw)}$. But of course we can not construct this polynomial, so we try to find the restriction of $F$ to $M_{\bfw, \bfv_i}$.
+    \end{observation}
 
-In this subsection, we shall show that using $\bbz_6$ as the base ring for the polynomials, we can reduce the degree of $\OR_n$ function to $O(\sqrt{n})$.
+\section{Some Decoding Procedures}
 
-\begin{blackbox}
-    \begin{theorem}[Barrington-Beigel-Rudich]\label{th:bbr}
-        There exists an $n$-variate polynomial that represents $\OR_n$ modulo $6$ with degree at most $O(\sqrt{n})$.
-    \end{theorem}
-\end{blackbox}
-Before going to this involved proof, let me give an intuitive proof outline of this theorem. 
-Basically, we want to construct a polynomial $f\in\bbz_6[x_1,\ldots,z_n]$ of degree at most $O(\sqrt{n})$ such that $\OR_n(\bfa) = 0$ if and only if $f(\bfa) = 0\pmod6$.
-Suppose we can construct two polynomials $f_2\in\bbz_2[x_1,\ldots,z_n]$ and $f_3\in\bbz_3[x_1,\ldots,z_n]$ such that for some $2^d\approx\sqrt{n}$ and $3^e\approx\sqrt{n}$, we have:
-\[
-f_2(a) = 0 \iff \|a\| \equiv 0 \pmod{2^d} \quad \text{and} \quad f_3(a) = 0 \iff \|a\| \equiv 0 \pmod{3^e},
-\]
-making sure that $\deg f_i$ is nearly $\sqrt{n}$. Intuitively this is possible due to the fact that the number of $\bfa$ that satisfies the above condition is at most $\sum_{i = 1}^{\sqrt{n}}\binom{n}{i\sqrt{n}}$, which is very smaller than $\sqrt{n}2^{n-1}$, which is the \emph{Schwarz-Zippel} bound, see Lemma~\ref{app:sz}. Having this done, let us consider the isomorphism given in Theorem~\ref{app:crt-poly}. There exists a unique polynomial $f\in\bbz_6[x_1,\ldots,x_n]$ such that $f_2 = f\pmod2$ and $f_3 = f\pmod3$.
-If we make sure that $2^d3^e>n$, then we can show that $f$ represents $\OR_n$ by the following arguements and Theorem~\ref{app:crt-int}.
+We shall now see some explicit decoding procedures along with making the error tolerance better and better.
 
-\[
-    f(\bfa) = 0 \iff f_2(\bfa) = 0 \text{ and } f_3(\bfa) = 0 \iff \|\bfa\| = 0 \pmod{2^d3^e}  \iff \bfa = \mathbf{0},
-\]
-
-because $\|\bfa\|\leq n$. And to see the degree of $f$, note that $\deg f\leq \max\{\deg f_2, \deg f_3\} = O(\sqrt{n})$.
+\subsection{Basic Decoding on Lines}
 
 \begin{greybox}
-    \begin{lemma}\label{lem:prime poly}
-        If $p$ is fixed prime, then for all $d\in\bbn$, there exists a polynomial $f_p^d\in\bbz_p[x_1,\ldots,x_n]$ such that $\deg(f_p^d)\leq p^d - 1$ and $f_p^d(\bfa) = 0$ if and only if $\|\bfa\| = 0\pmod{p^d}$.
-    \end{lemma}
+    \begin{proposition}
+        \label{prop:line-decoding-mvc}
+Let $\calu,\calv$ be a family of $S$-matching vectors in $\bbz_m^n$,
+with $|\calu| = |\calv| = k$ and $|S| = s$. Suppose $m \mid (q-1)$, where
+$q$ is a prime power. Then there exists a $q$-ary linear code encoding
+$k$-long messages to $m^n$-long codewords that is
+$(s+1,\delta,(s+1)\delta)$-locally decodable for all $\delta$.
+\end{proposition}
 \end{greybox}
-\begin{proof}
-    We shall use Theorem~\ref{app:crt-poly} to show this. Let $w = \|\bfa\|$ with $(w_0,w_1,\ldots)$ as the $p$-ary expansion of $w$. Consider the function $f(\bfa) = \prod_i(1 - w_i^{p-1}) - 1 \pmod p $, so that $f(\bfa) = 0$ if and only if $\bfa = 0$, this is because $f(\bfa) = 0$ if and only if $w_i = 0$ for all $i$. Now the next question is if we can write this $w_j(\bfa)$ as a polynomial in $\bfa_1,\ldots,\bfa_n$. Note that by Theorem~\ref{app:lucas} for all $j$, 
+
+Consider the code specified in Equation~\ref{enc}. Now do the following decoding procedure:
+\begin{enumerate}
+    \item Pick $\bfw\sim\mathrm{Unif}(\bbz_m^n)$ and construct the multiplicative line $M_{\bfw, \bfv_i}$.
+    \item Query the $M$-evaluation of $F$ at $s+1$ many consecutive locations, say $\{g^{\bfw+\lambda \bfv_i} : \lambda\in\{0,\ldots,s\}\}$ and obtain the points $c_0,\ldots,c_s$. 
+    \item Interpolate the unique sparse polynomial $h\in\bbf_q[y]$ with $\mathrm{supp}(h)\subseteq S\cup\{0\}$ such that $h(g^{\lambda}) = c_{\lambda}$ for all $\lambda$.
+    \item Output $h(0)/g^{(\bfw, \bfu_i)}$.
+\end{enumerate}
+
+\begin{proof}[Proof for failure probability] This is a fairly easy probability to calculate.
     \begin{align*}
-        \binom{w}{p^j} 
-        & \equiv \binom{w_j}{1}\prod_{r\neq j}\binom{w_r}{0} \pmod{p}\\
-        & = w_j.
+        \Pr[\text{failure of decoder}] 
+        & = \Pr[F(g^{\bfw + \lambda\bfv_i}) \neq c_{\lambda}\text{ for some $\lambda$}] \\
+        & \leq \sum_{\lambda} \Pr[F(g^{\bfw + \lambda\bfv_i}) \neq c_{\lambda}]\\
+        & \leq \sum_{\lambda}\delta = (s+1)\delta.
     \end{align*}
-
-    So we can re-write the function as $f(\bfa) = \prod_i\left(1 - {\binom{w}{p^j}}^{p-1}\right) - 1\pmod p$. And one possible candidate for this $\binom{w}{p^j}$ is the multilinear polynomial $\Sym_{p^j}(\bfx)$ defined for any $\bfx\in\bbz_p$ as:
-    \[
-       \Sym_{p^j}(\bfx) = \sum_{\substack{I\subseteq[n]\\|I| = p^j}}\prod_{j\in I}x_j.
-    \]
-    Now observe that $\Sym(\bfa) = \binom{w}{p^j}$, thus one possible candidate polynomial in $\bbz_p[x_1,\ldots,x_n]$ is:
-
-    \[
-        f_p^d(\bfx) = \prod_{i=0}^{d-1}\left(1 - {\Sym_{p^j}(\bfx)}^{p-1}\right) - 1.
-    \]
-
-    Degree of this polynomial is at most $\sum_0^{d-1}p^j(p-1) = p^d-1$ and it represents $\OR_n$.
+    
 \end{proof}
 
-Now we can prove Theorem~\ref{th:bbr} formally.
 
-\begin{proof}[Proof of Theorem~\ref{th:bbr}]
-  Take $d$ and $e$ such that $\sqrt{n} < 2^d \leq 2\sqrt{n}$ and $\sqrt{n} < 3^e \leq 3\sqrt{n}$. By Lemma~\ref{lem:prime poly}, there are two polynomials $f_2 \in \mathbb{Z}_2[x_1, \ldots, x_n]$ and $f_3 \in \mathbb{Z}_3[x_1, \ldots, x_n]$ such that $\deg(f_2) \leq 2^d - 1$, $\deg(f_3) \leq 3^e - 1$, and
-\[
-f_2(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{2^d}, \qquad f_3(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{3^e}.
-\]
-Now by Theorem~\ref{app:crt-poly}, $f = (f_2, f_3) \in \mathbb{Z}_6[x_1, \ldots, x_n]$ has degree at most $\max(\deg(f_2), \deg(f_3))$, which is at most $3\sqrt{n}$, and $f(\bfa) = 0$ if and only if $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$. Since $2^d 3^e > n$, we have $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$ if and only if $\|\bfa\| = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$. So $f(\bfa) = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$.
-\end{proof}
+\subsection{Improvement on Line Decoding}
 
-\section{Construction of MVF}
+In this section we shall see how we can make the line decoding better to get error tolerance of $\delta<1/4$ by making the matching families \emph{bounded}. 
 
-Now we have built pretty much all the machinery needed to prove Theorem~\ref{th:bbr}. The version of this theorem for modulo $6$ is the following:
-\begin{blackbox}
-    \begin{theorem}\label{th:baby-bbr}
-        For any $l\in\bbn$, there exists a matching vector family in $\bbz_6^l$ of size $l^{C\log l/(\log\log l)^2}$, where $C = 1/81$.   
-    \end{theorem}
-\end{blackbox}
+\begin{definition}[$b$-bounded Matching Vectors]
+    $\calu, \calv$ are said to be a $b$-\emph{bounded} $S$-matching family over $\bbz_m^n$ if $S$ is $b$-bounded.
+\end{definition}
 
-\begin{proof}
-    Start with an arbitrary $h\in\bbn$ that will be decided later precisely. Now take two boolean strings $\bfa$ and $\bfb$ of size $h$. By Theorem~\ref{th:baby-bbr}, there exists a polynomial in $\bbz_6[x_1,\ldots,x_h]$ that represents $\OR_h$ modulo $6$ of degree $d = O(\sqrt{n})$. For a fixed $\bfb$, define $g_{\bfb}\in\bbz_6[x_1,\ldots,x_h]$ such that $g_{\bfb}(\bfx) = f\left((\bfb-\bfx)\hprod(\bfb-\bfx)\right)$. Observe that,
-    \[
-        g_{\bfb}(\bfa) \begin{cases} = 0 \pmod{6} & \text{if } \bfa = \bfb \\ \neq 0 \pmod{6} & \text{if } \bfa \neq \bfb. \end{cases}
-    \]
-
-    We shall now try to construct a matching vector with these $2^h$ many kind of matching vector family of $\calg = \{g_{\bfb}\}_{\bfb\in\{0,1\}^h}$ and $\cala = \{\bfa\}_{\{0,1\}^h}$. The following lemma helps us constructing an MVF in $\bbz_6^l$ of size $\binom{h+d}{d}$.
+We now give the main proposition of this subsection analogous to Proposition~\ref{improve}.
 
 \begin{greybox}
-    \begin{lemma}
-\label{lem:poly-match}
-$\calg$ and $\cala$ yields $\bbz_6$-matching in $\bbz_6^{\binom{h+d}{d}}$ of size $2^h$.
-\end{lemma}
+\begin{proposition}
+Let $0 < \sigma < 1$. Let $\mathcal{U},\mathcal{V}$ be a $\sigma m$-bounded family of $S$-matching vectors in $\mathbb{Z}_m^n$, $|\mathcal{U}| = |\mathcal{V}| = k$. Suppose $m \mid (q-1)$, where $q$ is a prime power. Then there exists a $q$-ary linear code encoding $k$-long messages to $m^n$-long codewords that is $(m,\delta,2\delta/(1-\sigma))$-locally decodable for all $\delta$.
+\end{proposition}
 \end{greybox}
 
-\begin{proof}
-We define the vector $\bfu_{\bfb}$ to be the $\binom{h+d}{d}$-dimensional vector of coefficients of the polynomial $g_{\bfb}$. Similarly, for $\bfa\in\{0,1\}^h$, we define the vector $\bfv_{\bfa}$ to be the vector of evaluations of monomials at the point $\bfa$. It is easy to check that for all $\bfa,\bfb \in \{0,1\}^h$,
-\[
-\inp{\bfu_{\bfb}}{\bfv_{\bfa}} = g_{\bfb}(\bfa),
-\]
-and hence the sets $U, V$ indeed form an $\bbz_6$-matching family.
+Consider the same code as before and the following decoding procedure:
+\begin{enumerate}
+    \item Pick $\bfw\sim\mathrm{Unif}(\bbz_m^n)$ and construct the multiplicative line $M_{\bfw, \bfv_i}$.
+    \item Query the $M$-evaluation of $F$ at all of the $m$ locations, and obtain the points $c_0,\ldots,c_{m-1}$. 
+    \item By Berlekamp-Welch algorithm, given in \cite{GRS25}, compute the unique univariate polynomial $h(y)\in\bbf_q[y]$ of degree less that $\sigma m$ and $\mathrm{supp}(h)\subseteq S\cup\{0\}$ such that $h$ agrees with the corrupted $M$-evaluation of $F$ at all but at most $m(1-\sigma)/2$ many points.
+    \item Return $h(0)/g^{(\bfu_i, \bfw)}$ if such $h$ exists, else return $0$.
+\end{enumerate}
+
+\begin{proof}[Proof for failure probability]
+    Take the random variable $X$ denoting the number of corrupted query points in the $M$-evaluation of $F$. Now failure occurs if $X\geq m(1-\sigma)/2$, hence failure probability is less than or equal to:
+    \begin{align*}
+        \Pr\left[X \geq \frac{m(1-\sigma)}{2}\right]
+        & \leq \frac{1}{m(1-\sigma)/2}\E[X] \quad \text{[Markov Inequality]}\\
+        & = \frac{1}{m(1-\sigma)/2}\sum_{\lambda\in\bbz_m}\Pr\left[F(g^{\bfw + \lambda\bfv_i})\neq c_{\lambda}\right]\\
+        & \leq \frac{2m\delta}{m(1-\sigma)} = \frac{2\delta}{1-\sigma}.
+    \end{align*}
 \end{proof}
 
-Set $h$ such that $l = \binom{h+d}{d}\leq (2h)^d\leq(2h)^{3\sqrt{h}}$. Now it is enough to show $ h \geq C\log^2 l/\log^2 \log l$.
-This follows directly from the following calculations:
+\begin{observation}[Error Tolerance]
+        As $\sigma\downarrow0$, the limiting failure probability is $2\delta$, hence we can only tolerate up to $\delta<1/4$ fraction of errors, because for error tolerance, the failure probability must be less that $1/2$. In the next subsection, we show a decoding paradigm that can tolerate up to $1/2$ fraction of errors.
+    \end{observation}
+
+\subsection{Decoding on Multiple Lines}
+
+Rather than constructing one random multiplicative line, we shall construct more and using the queries at each $M$-evaluation of $F$, we shall interpolate the polynomial.
+
+\begin{greybox}
+    \begin{proposition}
+Let $0 < \sigma < 1$. Let $\mathcal{U},\mathcal{V}$ be a $\sigma m$-bounded family of $S$-matching vectors in $\mathbb{Z}_m^n$, $|\mathcal{U}| = |\mathcal{V}| = k$. Suppose $m \mid (q-1)$, where $q$ is a prime power. Then for every positive integer $l$ there exists a $q$-ary linear code encoding $k$-long messages to $m^n$-long codewords that for all $\delta < (1-\sigma)/2$ is $(lm,\delta,\exp_{\delta,\sigma}(-l))$-locally decodable.
+\end{proposition}
+\end{greybox}
+
+Consider the same code as before and fix an $l\in\bbn$. Now here we shall not construct the polynomial like we have do before, we shall consider $l$ many $M$-evaluations of $F$ and instead of interpolating the polynomial directly, we shall assign weight to each field element $e$ with respect to the likelihood of $x(i) = e$. And from that we shall return the unique highest weight field element, if exists. The decoding procedure is the following:
+
+\begin{enumerate}
+    \item Take $\bfw_1,\ldots,\bfw_l$ uniformly at random from $\bbz_m^n$ and consider the $l$ many multiplicative lines $\{M_{\bfw_j, \bfv_i} : j\in[l]\}$.
+    \item Query at the $lm$ many coordinates of all the $M$-evaluations of $F$ and obtain $l$ many vectors in $\bbf_q^m$, say $\bfc^1,\ldots,\bfc^m$. For each $e\in\bbf_q$, compute:
+    \[
+        \mathrm{weight}(e) = \sum_{j=1}^{l}\mathrm{weight}(e,M_{\bfw_j, \bfv_i}).
+    \]
+    \item Return $e$ with the highest weight. If it is not unique, then return $0$.
+\end{enumerate}
+
+\begin{observation}
+        Suppose there are two distinct $e_1,e_2\in\bbf_q$ such that $\mathrm{weight}(e_1), \mathrm{weight}(e_2)>lm(1+\sigma)/2$. Then by PHP, there would be two distinct polynomials $h_1, h_2\in\bbf_q[y]$, both of degree less than $\sigma m$ and two multiplicative lines $M_1, M_2$ such that $\mathrm{weight}(e_1,M_1)>m(1+\sigma)/2$ and $\mathrm{weight}(e_2,M_2)>m(1+\sigma)/2$. Now by inclusion-exclusion, the numeber of agreement points of $h_1$ and $h_2$ is at least $2m(1+\sigma)/2 - m = \sigma m$. Thus we can not have such a pair.
+    \end{observation}
+
+\begin{proof}[Proof for failure probability]
+    Consider the random variable $X$ denoting the number of corrupted queried points and failure probability is less than or equal to $\Pr[X\geq lm(1+\sigma)/2]$. Note that, 
+    \[
+        X = \sum_{j = 1}^{l}\left( \sum_{\lambda\in\bbz_m} 
+\mathbbm{1}_{\{F(g^{(\bfw_j,\bfv_i)}_\lambda)\neq \bfc^j_{\lambda}\}}
+\right)
+    \]
+
+    Now the expected value of $X$ is:
+    \begin{align*}
+    \E[X]
+    &= \sum_{j = 1}^{l}\left( \sum_{\lambda\in\bbz_m} 
+    \Pr[F(g^{(\bfw_j,\bfv_i)}_\lambda)\neq \bfc^j_{\lambda}]
+    \right)\\
+    &\leq \sum_{j = 1}^{l}\left( \sum_{\lambda\in\bbz_m} \delta \right) = ml\delta.
+\end{align*}
+
+Now $X$ is the sum of $lm$ many independent and identically distributed Bernoulli random variable of success probability $\delta$. Now we can apply \emph{Chernoff bound}, given in \cite{Alon2000}, in the following way to find an upper bound for failure probability. Using $\delta<(1 - \sigma)/2$,
 \begin{align*}
- \frac{C\log^2 l}{\log^2 \log l} 
-&\leq \frac{\left(3\sqrt{h} \log(2h)\right)^2}{81 \log^2\left(3\sqrt{h} \log(2h)\right)} \\
-&\leq \frac{9h \log^2(2h)}{81 \log^2(\sqrt{h})} \\
-&= \frac{h \left(2\log(\sqrt{h}) + 1\right)^2}{9 \log^2(\sqrt{h})} \\
-&\leq \frac{9h \log^2(\sqrt{h})}{9 \log^2(\sqrt{h})} \\
-&= h
+    \Pr[X\geq lm(1+\sigma)/2] 
+    & \leq \Pr[X - \E[X] \geq lm(1+\sigma)/2 - lm(1 - \sigma)/2] \\
+    &  = \Pr[X - \E[X]\geq ml\sigma] \\
+    & \leq \exp_{\sigma, \delta}(-l) \quad \text{Chernoff Bound}. 
 \end{align*}
 \end{proof}
 
-This proof can be generalized to modulo $m$ for any $m \left(= \prod_i^t p_i\right)$ which is a product of distinct primes by setting the prime powers $p_i^{e_i}$ used in the construction to be greater than $n^{1/t}$ and at most $p_i n^{1/t}$ and use the generalized Chinese Remainder Theorem.
+Now we can show how we increase the error tolerance up to $\delta < 1/2$. Since the proposition holds for every $\delta < (1-\sigma)/2$, letting $\sigma \downarrow 0$ yields $\delta \uparrow 1/2$. Hence the decoder tolerates any error fraction $\delta < 1/2$.  

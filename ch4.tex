@@ -1,192 +1,191 @@
-\chapter{Private Information Retrieval}
-\label{ch:pir}
+\chapter{Matching Vectors}
+\label{ch:mvf}
 
-Private Information Retrieval schemes were first introduced in the paper \cite{pir-sudan}. This chapter will consist of the PIR scheme described in \cite{improved-pir}.
+Recall the definition of \emph{matching vectors}, given in Definition~\ref{mvf}. We shall give some combinatorial and algorithmic viewpoint for constructing such matching vector families in this chapter. The main references for this are \cite{bbr1992} and \cite{Grolmusz2000}.
 
-\section{Introduction}
+This chapter shall mainly consist of the construction of an MVF. The main result of \cite{Grolmusz2000} is the following:
 
-In a $k$-server Private Information Retrieval (PIR) scheme, a user wishes to retrieve the $i$-th bit $a_i$ of an $n$-bit database $\bfa = (a_1, \ldots, a_n) \in \{0,1\}^n$,
-which is replicated among $k$ non-communicating servers, without revealing any
-information about the index $i$ to any individual server.
-The central goal in the study of PIR schemes is to minimize the \emph{communication cost}, defined as the worst-case total number of bits exchanged between the user and the servers over the course of the protocol.
-The trivial solution, which works even with a single server, is to have the server transmit the entire database $\bfa$ to the user; this achieves correctness and perfect privacy, but at the high cost of $n$ bits of communication. A fundamental question is therefore: \emph{can we do better}?
-
-Before moving forward let me define formally what a PIR scheme is:
-\begin{definition}[PIR Scheme]
-
-    A one-round $t$-server PIR protocol involves $t$ servers $S_1, \ldots, S_t$, each holding
-the same $n$-bit database $\bfa = (a_1, \ldots, a_n) \in \{0,1\}^n$, such that
-these servers do not communicate with each other, and there is a user $\calu$
-who knows $n$ and wishes to retrieve some bit $a_i$ for $i \in [n]$, without revealing
-the index $i$. The protocol consists of a randomized algorithm for the user and $t$
-deterministic algorithms for the servers, satisfying the following:
-
-\begin{enumerate}
-    \item On input $i \in [n]$, the user $\calu$ samples a random string $\mathsf{rand}$,
-    produces $t$ queries $q_1, \ldots, q_t$, and sends query $q_j$ to server $S_j$.
-
-    \item Each server $S_j$ computes a response $r_j = S_j(\bfa, q_j)$ and sends
-    it back to the user.
-
-    \item The user, given $i$, $\mathsf{rand}$, and responses $r_1, \ldots, r_t$,
-    reconstructs $a_i$.
-\end{enumerate}
-
-\noindent The protocol must satisfy the following two conditions:
-
-\begin{itemize}
-    \item \textbf{Correctness:} For any database $\bfa \in \{0,1\}^n$ and any
-    index $i \in [n]$, the user outputs $a_i$ with probability $1$, where the
-    probability is taken over the random string $\mathsf{rand}$.
-
-    \item \textbf{Privacy:} Each server individually learns nothing about the queried
-    index $i$. Formally, for any server $S_j$ and any two indices $i_1, i_2 \in [n]$,
-    the distributions of $q_j(i_1, \mathsf{rand})$ and $q_j(i_2, \mathsf{rand})$ over
-    the randomness $\mathsf{rand}$ are identical.
-\end{itemize}
-    
-\end{definition}
-
-For $1$-server PIR scheme, we can not do better than $n$ communication cost as if we have less than $n$ bits of communication, then there would be two indices for which we may have the same message from the server. In \cite{pir-sudan}, we have a $2$-server PIR scheme with $\O(n^{1/3})$ and $3$-server PIR scheme with $\O(n^{1/2})$ communication cost. Then in \cite{efr09}, we have a communication $2^{\tO(\sqrt{\log n})}$ for $3$-server PIR scheme.  
-
-
-\section{A Basic PIR Scheme}\label{sec:basic-pir}
-
-The following PIR Scheme will give us a $\O(n^{1/2})$ communication with $3$ servers. If $\bfa\in\bbf^n \equiv \bbf^{\binom{k}{2}}$ is our database and user wants $\bfa_{\tau}$, then it equivalent to construct a polynomial $F\in\bbf[x_1,\ldots,x_k]$ defined as:
-
-\[
-    F(x_1,\ldots, x_k) = \sum_{i,j} a_{ij}X_iX_j.
-\]
-For some re-design of the indexing set and have the user find a suitable $a_{ij}$ such that it equals $a_{\tau}$, by giving the evaluation of $F$ at $(0,\ldots,1,\ldots,1,\ldots,0)$, with $1$ only appearing in $i$ and $j$-th coordinates. 
-
-We generalize this problem in the given PIR scheme and solve it via $3$-servers and $\O(n^{1/2})$ communication.
-
-\subsection*{PIR Scheme}
-
-Suppose for an $\bfx\in\bbf^k$, the user wants $F(\bfx)$ and the servers has the polynomial $F$. 
-
-\begin{enumerate}
-    \item Pick $\bfy\in\bbf^k$ uniformly at random. 
-    \item Consider the curve $C(Z) = \bfx + Z\bfy$.
-    \item Consider the restriction $A(Z) = F(C(Z)) = F(\bfx + Z\bfy)$ of $F$ on this curve, notice that $\deg A = 2$. 
-    \item For $i\in[3]$, ask server $i$ to return $A(i)$ to the user.
-    \item Interpolate $A$ using $A(1), A(2)$ and $A(3)$.
-    \item Return $A(0)$.
-\end{enumerate}
-
-The correctness of the PIR scheme is easy to observe. And we send $k$-bit information to each server and receive $1$-bit information from each server. Thus in total the communication cost is $\O(k) = \O(n^{1/2})$ as $n = \binom{k}{2}$.
-
-\section{PIR Scheme of \cite{improved-pir}}
-
-The PIR scheme described in Section~\ref{sec:basic-pir} is the main idea behind all the PIR schemes that are to come. We pick a random curve in a space and restrict the polynomial(not exactly the same as in Section~\ref{sec:basic-pir}) to that curve and try to interpolate the polynomial, if the entire polynomial can not be interpolated(which will be the case), then we shall try to interpolate the value of the polynomial at $0$ only. 
-
-PIR schemes using matching vectors were introduced in \cite{yek08-3ldc} and \cite{efr09}. A very detailed and well-written flow of improvement of the PIR schemes throughout the years can be found in \cite{improved-pir}. But we shall only see and explore the improvement done by the very paper. 
-
-But before going to the actual explicit PIR scheme, we need to be familiar with some ideas required for the scheme to make sense and implement.
-
-Suppose the database here is $\bfa\in\bbf^n$ and the user wants $a_{\tau}$. Also $(\bfu_1,\bfv_1),\ldots,(\bfu_n,\bfv_n)$ is an $S$-matching vector family in $\bbz_m^k$ for some positive integer $m$. Now the servers make the polynomial $F(\bfX)\in\bbf[X_1,\ldots,X_k]$ as follows:
-
-\[
-    F(\bfX) = \sum_{i = 1}^{n} a_i\bfX^{\bfu_i} = \sum_{i = 1}^{n}a_i X_1^{u_{i1}}\cdots X_k^{u_{ik}}.
-\]
-
-We shall deal with the restriction of this polynomial throughout the chapter. Also we choose the characteristic $p$ field $\bbf$ such that it contains all the $m$-th root of unity.
-
-We first construct the random curve $C(Z)$ by first choosing $\bm{\beta}$ uniformly at random and considering $C(Z) = \bm{\beta}\hprod Z^{\bfv_{\tau}}$. Then consider the univariate polynomial $A(Z) = F(C(Z))$, but $\deg(A) = \O(k\cdot m^2)$. So to reduce it, we do $A_1(Z) = A(Z) \pmod{Z^m - 1}$. Observe that $A_1$ is of the form: 
-\[
-    A_1(Z) = a_{\tau}\bm{\beta}^{\bfu_{\tau}} + \sum_{\substack{s\in S \\ s \neq 0}} w_s Z^s.
-\]
-
-So to get $a_{\tau}$, it is enough to know $A_1(0)$. We shall try to interpolate $A_1$ at $0$ in the following sections. 
-
-\subsection{Preliminaries}
-
-We shall be doing the interpolation in the regime using \emph{$S$-mathcing vector families} and \emph{$S$-decoding polynomials}, or the SMVF+SSD framework. We have already seen SMVF before in Chapter~\ref{ch:mvc}, let us define what SSD is.
-
-\begin{definition}[$S$-decoding Polynomials]
-    Let $S \subseteq \mathbb{Z}_m$ be a set containing $0$. Let $\bbf$ be a field containing an element $\gamma_m$ which is a primitive $m$'th root of $1$. A polynomial $P(Z) \in \bbf[Z]$ is called an \textit{S-decoding polynomial} if the following conditions hold:
-\begin{itemize}
-    \item $\forall s \in S \setminus \{0\}: P(\gamma_m^s) = 0$
-    \item $P(\gamma_m^0) = P(1) = 1$
-\end{itemize}
-\end{definition}
-
-Now we can state the main theorem that is the result of \cite{improved-pir}, which improves the communication and server trade-off.
-
-\begin{definition}[Canonical Set]
-    Let $m\in\bbn$, we define \emph{canonical set} for $m$ to be:
+\begin{blackbox}
+     \begin{theorem}[Grolmusz]\label{th:grolmusz}
+    Let
+    $m = \prod_{i=1}^t p_i$
+    be a product of distinct primes. Then there exists an explicit matching vector family in $\bbz_m^l$ of size
     \[
-        S = \{x\in\bbz_m : x^2 \equiv x\pmod m\}.    
-    \] 
+    k = \exp\left(
+        \Omega\left(
+            \frac{(\log l)^t}{(\log\log l)^{t-1}}
+        \right)
+    \right).
+    \]
+\end{theorem}
+\end{blackbox}
+
+\section{Degree Analysis of $\OR_n$ Function}
+
+
+Before going to the actual proof of Theorem~\ref{th:grolmusz}, we first state some interesting ideas. One of the most important combinatorial question that can arise in one's mind is how large the size of the family can be. The following lemma gives an upper bound on the size of an MVF.
+
+\begin{greybox}
+    \begin{lemma}
+        If $p$ is a prime, then any MVF in $\bbz_m^l$ has size at most $1 + l^{p-1}$. 
+    \end{lemma}
+\end{greybox}
+\begin{proof}
+    Let $\calu, \calv$ be a MVF in $\bbz_p^l$ of size $k$. Consider the matrix $A\in\bbz_p^{k\times k}$ with $A_{i,j} = \inp{\bfu_i}{\bfv_j}$. By \emph{Fermat's Little Theorem}, Lemma~\ref{app:fermat} in Appendix~\ref{app}, we observe that $A_{i,j}^{p-1} = 1$ for all $i,j$. Observe, $A^{p-1} = J_k - I_k$, hence $\rank(A^{p-1})\leq k-1$ and $\rank(A^{p-1}) \leq \rank(A)^{p-1} \leq l^{p-1}$, by Lemma~\ref{app:matrix power}. 
+\end{proof}
+
+
+\subsection{Polynomial Representation of OR-function in $\mathrm{mod }$ $6$}
+
+\begin{definition}[OR Function]
+    $n$-variate OR function, denoted as $\OR_n$, is a boolean function defined as:
+    \[
+    \OR_n(x_1,\ldots,x_n) = 0 \text{ if and only if } x_i = 0 \text{ for all } i\in[n].
+    \]
 \end{definition}
 
-The following is the main result that we shall prove in the coming sections.
+We shall now study some polynomial ``representative''(s) of this OR function. 
+
+
+\begin{definition}
+    A polynomial $g \in \mathbb{Z}_m[x_1, \ldots, x_n]$ \emph{represents} a boolean function $f : \{0,1\}^n \to \{0,1\}$ mod $m$ if for all $ \bfx \in \{0,1\}^n,$
+\[
+ g(\bfx) 
+\begin{cases} 
+= 0 \pmod{m} & \text{if } f(\bfx) = 0 \\ 
+\neq 0 \pmod{m} & \text{if } f(\bfx) = 1 
+\end{cases}
+\]
+
+And the \emph{degree} of the boolean function $f$ modulo $p$, denoted as $\deg_p(f)$, is defined as $ \min\{\deg(g) : g \text{ represents $f$ modulo $p$}\}$.
+\end{definition}
+
+The following lemma shall give the main motivation behind the study of representative polynomials modulo a composite number with at least two distinct prime factors, instead of a prime power, or equivalently, shifting our focus from fields to rings!
+
+\begin{greybox}
+    \begin{lemma}\label{why no prime}
+        If $p$ is a prime, then $\deg_p(\OR_n)\geq n/(p-1)$. 
+    \end{lemma}
+\end{greybox}
+
+\begin{proof}
+    Let $g$ be a polynomial representative of $\OR_n$ in $\bbf_p$, i.e., $\OR_n(\bfa) = 0$ if and only if $g(\bfa) = 0 \pmod p$. Notice that as we are working $\bbf_p$, we can transform $g$ to make it behave like a boolean function in $\bbf_p$. Consider the polynomial $h(\bfx) = 1 - g^{p-1}(\bfx)$. Now notice that as we are in $\{0,1\}^n$, we can make this $h$ multilinear, say $\tilde{h}$. Observe, by Lemma~\ref{app:fermat}, $\tilde{h}(\bfa) = 1$ at $\mathbf{0}$ and $0$ everywhere else. Also by $Lemma~\ref{app:spl_sz}$, we get that:
+    \[
+        2^n - 1 = |\{\bfa\in\{0,1\}^n : \tilde{h}(\bfa) = 0\}| \leq 2^n - 2^{n - \deg\tilde{h}}.
+    \]
+
+    Hence, $\deg\tilde{h}\geq n$ and with that we get our final bound:
+
+    \[
+        n\leq\deg\tilde{h}\leq\deg h\leq (p-1)\deg g.
+    \]
+\end{proof}
+
+Also note we can extend Lemma~\ref{why no prime} to prime powers, the only difference that would rise it taken care by Lemma~\ref{app:fermat}. 
+Hence, we see that taking prime power ring, or the field, we get the minimum degree to be $\Omega(n)$ but \cite{bbr1992} showed that for \emph{product of distinct primes} size ring, we can get much smaller degree representative polynomials. We shall only see the proof of BBR theorem for modulo $6$ but this can be extended to any $m$ that is a product of distinct primes with the same principles used in the following proof. 
+
+\subsection{Barrington-Beigel-Rudich Theorem}
+
+In this subsection, we shall show that using $\bbz_6$ as the base ring for the polynomials, we can reduce the degree of $\OR_n$ function to $O(\sqrt{n})$.
 
 \begin{blackbox}
-    \begin{theorem}[\cite{improved-pir}]
-        Let $m$ be a positive integer with $r$ distinct prime factors, and let $p$ be a prime not dividing $m$.
-Suppose $\bbf$ is a field of characteristic $p$ such that, for $S^* \subseteq \mathbb{Z}_m$ being the canonical set for $m$, there is an $S^*$-decoding polynomial over $\bbf$ with sparsity $\leq t$.
-Then there is a $t$-server PIR scheme with communication $\exp\left(\tO\left((\log n)^{\frac{1}{r+1}}\right)\right)$.
+    \begin{theorem}[Barrington-Beigel-Rudich]\label{th:bbr}
+        There exists an $n$-variate polynomial that represents $\OR_n$ modulo $6$ with degree at most $O(\sqrt{n})$.
+    \end{theorem}
+\end{blackbox}
+Before going to this involved proof, let me give an intuitive proof outline of this theorem. 
+Basically, we want to construct a polynomial $f\in\bbz_6[x_1,\ldots,z_n]$ of degree at most $O(\sqrt{n})$ such that $\OR_n(\bfa) = 0$ if and only if $f(\bfa) = 0\pmod6$.
+Suppose we can construct two polynomials $f_2\in\bbz_2[x_1,\ldots,z_n]$ and $f_3\in\bbz_3[x_1,\ldots,z_n]$ such that for some $2^d\approx\sqrt{n}$ and $3^e\approx\sqrt{n}$, we have:
+\[
+f_2(a) = 0 \iff \|a\| \equiv 0 \pmod{2^d} \quad \text{and} \quad f_3(a) = 0 \iff \|a\| \equiv 0 \pmod{3^e},
+\]
+making sure that $\deg f_i$ is nearly $\sqrt{n}$. Intuitively this is possible due to the fact that the number of $\bfa$ that satisfies the above condition is at most $\sum_{i = 1}^{\sqrt{n}}\binom{n}{i\sqrt{n}}$, which is very smaller than $\sqrt{n}2^{n-1}$, which is the \emph{Schwarz-Zippel} bound, see Lemma~\ref{app:sz}. Having this done, let us consider the isomorphism given in Theorem~\ref{app:crt-poly}. There exists a unique polynomial $f\in\bbz_6[x_1,\ldots,x_n]$ such that $f_2 = f\pmod2$ and $f_3 = f\pmod3$.
+If we make sure that $2^d3^e>n$, then we can show that $f$ represents $\OR_n$ by the following arguements and Theorem~\ref{app:crt-int}.
+
+\[
+    f(\bfa) = 0 \iff f_2(\bfa) = 0 \text{ and } f_3(\bfa) = 0 \iff \|\bfa\| = 0 \pmod{2^d3^e}  \iff \bfa = \mathbf{0},
+\]
+
+because $\|\bfa\|\leq n$. And to see the degree of $f$, note that $\deg f\leq \max\{\deg f_2, \deg f_3\} = O(\sqrt{n})$.
+
+\begin{greybox}
+    \begin{lemma}\label{lem:prime poly}
+        If $p$ is fixed prime, then for all $d\in\bbn$, there exists a polynomial $f_p^d\in\bbz_p[x_1,\ldots,x_n]$ such that $\deg(f_p^d)\leq p^d - 1$ and $f_p^d(\bfa) = 0$ if and only if $\|\bfa\| = 0\pmod{p^d}$.
+    \end{lemma}
+\end{greybox}
+\begin{proof}
+    We shall use Theorem~\ref{app:crt-poly} to show this. Let $w = \|\bfa\|$ with $(w_0,w_1,\ldots)$ as the $p$-ary expansion of $w$. Consider the function $f(\bfa) = \prod_i(1 - w_i^{p-1}) - 1 \pmod p $, so that $f(\bfa) = 0$ if and only if $\bfa = 0$, this is because $f(\bfa) = 0$ if and only if $w_i = 0$ for all $i$. Now the next question is if we can write this $w_j(\bfa)$ as a polynomial in $\bfa_1,\ldots,\bfa_n$. Note that by Theorem~\ref{app:lucas} for all $j$, 
+    \begin{align*}
+        \binom{w}{p^j} 
+        & \equiv \binom{w_j}{1}\prod_{r\neq j}\binom{w_r}{0} \pmod{p}\\
+        & = w_j.
+    \end{align*}
+
+    So we can re-write the function as $f(\bfa) = \prod_i\left(1 - {\binom{w}{p^j}}^{p-1}\right) - 1\pmod p$. And one possible candidate for this $\binom{w}{p^j}$ is the multilinear polynomial $\Sym_{p^j}(\bfx)$ defined for any $\bfx\in\bbz_p$ as:
+    \[
+       \Sym_{p^j}(\bfx) = \sum_{\substack{I\subseteq[n]\\|I| = p^j}}\prod_{j\in I}x_j.
+    \]
+    Now observe that $\Sym(\bfa) = \binom{w}{p^j}$, thus one possible candidate polynomial in $\bbz_p[x_1,\ldots,x_n]$ is:
+
+    \[
+        f_p^d(\bfx) = \prod_{i=0}^{d-1}\left(1 - {\Sym_{p^j}(\bfx)}^{p-1}\right) - 1.
+    \]
+
+    Degree of this polynomial is at most $\sum_0^{d-1}p^j(p-1) = p^d-1$ and it represents $\OR_n$.
+\end{proof}
+
+Now we can prove Theorem~\ref{th:bbr} formally.
+
+\begin{proof}[Proof of Theorem~\ref{th:bbr}]
+  Take $d$ and $e$ such that $\sqrt{n} < 2^d \leq 2\sqrt{n}$ and $\sqrt{n} < 3^e \leq 3\sqrt{n}$. By Lemma~\ref{lem:prime poly}, there are two polynomials $f_2 \in \mathbb{Z}_2[x_1, \ldots, x_n]$ and $f_3 \in \mathbb{Z}_3[x_1, \ldots, x_n]$ such that $\deg(f_2) \leq 2^d - 1$, $\deg(f_3) \leq 3^e - 1$, and
+\[
+f_2(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{2^d}, \qquad f_3(\bfa) = 0 \iff \|\bfa\| \equiv 0 \pmod{3^e}.
+\]
+Now by Theorem~\ref{app:crt-poly}, $f = (f_2, f_3) \in \mathbb{Z}_6[x_1, \ldots, x_n]$ has degree at most $\max(\deg(f_2), \deg(f_3))$, which is at most $3\sqrt{n}$, and $f(\bfa) = 0$ if and only if $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$. Since $2^d 3^e > n$, we have $\|\bfa\| \equiv 0 \pmod{2^d 3^e}$ if and only if $\|\bfa\| = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$. So $f(\bfa) = 0$ if and only if for all $ i \in [n],\ \bfa_i = 0$.
+\end{proof}
+
+\section{Construction of MVF}
+
+Now we have built pretty much all the machinery needed to prove Theorem~\ref{th:bbr}. The version of this theorem for modulo $6$ is the following:
+\begin{blackbox}
+    \begin{theorem}\label{th:baby-bbr}
+        For any $l\in\bbn$, there exists a matching vector family in $\bbz_6^l$ of size $l^{C\log l/(\log\log l)^2}$, where $C = 1/81$.   
     \end{theorem}
 \end{blackbox}
 
-This is a direct improvement of the result of \cite{efr09}, which is:
+\begin{proof}
+    Start with an arbitrary $h\in\bbn$ that will be decided later precisely. Now take two boolean strings $\bfa$ and $\bfb$ of size $h$. By Theorem~\ref{th:baby-bbr}, there exists a polynomial in $\bbz_6[x_1,\ldots,x_h]$ that represents $\OR_h$ modulo $6$ of degree $d = O(\sqrt{n})$. For a fixed $\bfb$, define $g_{\bfb}\in\bbz_6[x_1,\ldots,x_h]$ such that $g_{\bfb}(\bfx) = f\left((\bfb-\bfx)\hprod(\bfb-\bfx)\right)$. Observe that,
+    \[
+        g_{\bfb}(\bfa) \begin{cases} = 0 \pmod{6} & \text{if } \bfa = \bfb \\ \neq 0 \pmod{6} & \text{if } \bfa \neq \bfb. \end{cases}
+    \]
 
-\begin{blackbox}
-    \begin{theorem}[\cite{efr09}]
-        Let $m$ be a positive integer with $r$ distinct prime factors, and let $p$ be a prime not dividing $m$.
-Suppose $\bbf$ is a field of characteristic $p$ such that, for $S^* \subseteq \mathbb{Z}_m$ being the canonical set for $m$, there is an $S^*$-decoding polynomial over $\bbf$ with sparsity $\leq t$.
-Then there is a $t$-server PIR scheme with communication $\exp\left(\tO\left((\log n)^{\frac{1}{r}}\right)\right)$.
-    \end{theorem}
-\end{blackbox}
+    We shall now try to construct a matching vector with these $2^h$ many kind of matching vector family of $\calg = \{g_{\bfb}\}_{\bfb\in\{0,1\}^h}$ and $\cala = \{\bfa\}_{\{0,1\}^h}$. The following lemma helps us constructing an MVF in $\bbz_6^l$ of size $\binom{h+d}{d}$.
 
+\begin{greybox}
+    \begin{lemma}
+\label{lem:poly-match}
+$\calg$ and $\cala$ yields $\bbz_6$-matching in $\bbz_6^{\binom{h+d}{d}}$ of size $2^h$.
+\end{lemma}
+\end{greybox}
 
-Following is the table of improvement over \cite{efr09} and \cite{dvir-gopi} over communication of the form $\exp\left(\tO\!\left((\log n)^{1/c}\right)\right)$ for positive integers $c$. 
+\begin{proof}
+We define the vector $\bfu_{\bfb}$ to be the $\binom{h+d}{d}$-dimensional vector of coefficients of the polynomial $g_{\bfb}$. Similarly, for $\bfa\in\{0,1\}^h$, we define the vector $\bfv_{\bfa}$ to be the vector of evaluations of monomials at the point $\bfa$. It is easy to check that for all $\bfa,\bfb \in \{0,1\}^h$,
+\[
+\inp{\bfu_{\bfb}}{\bfv_{\bfa}} = g_{\bfb}(\bfa),
+\]
+and hence the sets $U, V$ indeed form an $\bbz_6$-matching family.
+\end{proof}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-Total communication & \# servers for \cite{improved-pir} & \# servers for \cite{dvir-gopi} & \# servers for \cite{efr09} \\
-\hline
-$\exp(\tO((\log n)^{1/2}))$ & 2   & 2   & 3   \\
-$\exp(\tO((\log n)^{1/3}))$ & 3   & 4   & 8   \\
-$\exp(\tO((\log n)^{1/4}))$ & 8   & 8   & 9   \\
-$\exp(\tO((\log n)^{1/5}))$ & 9   & 16  & 24  \\
-$\exp(\tO((\log n)^{1/6}))$ & 24  & 32  & 27  \\
-\hline
-\end{tabular}
-\end{table}
+Set $h$ such that $l = \binom{h+d}{d}\leq (2h)^d\leq(2h)^{3\sqrt{h}}$. Now it is enough to show $ h \geq C\log^2 l/\log^2 \log l$.
+This follows directly from the following calculations:
+\begin{align*}
+ \frac{C\log^2 l}{\log^2 \log l} 
+&\leq \frac{\left(3\sqrt{h} \log(2h)\right)^2}{81 \log^2\left(3\sqrt{h} \log(2h)\right)} \\
+&\leq \frac{9h \log^2(2h)}{81 \log^2(\sqrt{h})} \\
+&= \frac{h \left(2\log(\sqrt{h}) + 1\right)^2}{9 \log^2(\sqrt{h})} \\
+&\leq \frac{9h \log^2(\sqrt{h})}{9 \log^2(\sqrt{h})} \\
+&= h
+\end{align*}
+\end{proof}
 
-\subsection*{Hasse Derivatives}
-    \begin{definition}[Hasse Derivatives]
-        For a multivariate polynomial $F(\bfX) \in \bbf[\bfX]$ and a non-negative integer vector $\bfi = (i{(1)}, \ldots, i{(k)})$, we denote the \emph{$\bfi$-th Hasse derivative} of $F$ by $F^{(\bfi)}(X)$, and it is the coefficient of $\bfY^{\bfi}$ in the polynomial $F(\bfX + \bfY) \in \bbf[\bfX, \bfY]$. Therefore, we have,
-
-\[F(\bfX + \bfY) = \sum_{\bfi} F^{(\bfi)}(\bfX)\, \bfY^{\bfi}.\]
-    \end{definition}
-
-We use the notation $F^{(<m)}(\bfa)$ to be the vector of all the evaluations of the $\bfi$-th Hasse derivative of $F$ at point $\bfa$ for all vectors $\bfi$ such that $\wt(\bfi) < m$. We note that Hasse derivatives are just a simple scaling of standard iterated derivatives whenever the order of derivative is smaller than the characteristic of the field. In particular, for the univariate polynomial $A(Z) = Z^s$, we have a simple formula for the Hasse derivative:
-
-$$A^{(j)}(Z) = \binom{s}{j} Z^{s-j}.$$
-
-Now the following facts about hasse derivatives are essential for interpolating $A_1()$ from its derivatives.
-
-\begin{itemize}
-    \item Let $A(Z) \in \mathbb{F}[Z]$ be a univariate polynomial, and let $b \in \mathbb{F}$. Then knowing $A(Z) \bmod (Z-b)^m$ is exactly equivalent to knowing $A^{(<m)}(b)$. Concretely, given $A^{(<m)}(b)$ we can construct the polynomial
-    $$A^*(Z) = \sum_{i=0}^{m-1} A^{(i)}(b)(Z-b)^i,$$
-    which is easily seen to be the remainder of $A(Z) \bmod (Z-b)^m$. This connection goes in the other direction too.
-
-    \item \textbf{Chain rule:} Suppose $F(X_1, \ldots, X_k) \in \bbf[X_1, \ldots, X_k]$ is a multivariate polynomial and $C = (P_1(Z), \ldots, P_k(Z))$ is a tuple of univariate polynomials in the single variable $Z$. Denote their composition by the polynomial $A(Z) = F(C(Z))$. Then, the $i$-th Hasse derivative of $A$, $A^{(i)}$, can be expressed as a polynomial in $F^{(\bfj)}(C(Z))$ for $\wt(\bfj) \leq i$ and $P_t^{(j)}(Z)$ for $1 \leq t \leq k,\, j \leq i$.
-\end{itemize}
-
-\subsection{$0$-interpolation Property}
-
-
-\subsection{The PIR Scheme}
-
-We need the following things for the PIR scheme to be useful:
-
-\begin{itemize}
-    \item $m\in\bbn$ that is a product of $r$ distinct primes and a prime $p$ not dividing $m$. 
-    \item 
-\end{itemize}
+This proof can be generalized to modulo $m$ for any $m \left(= \prod_i^t p_i\right)$ which is a product of distinct primes by setting the prime powers $p_i^{e_i}$ used in the construction to be greater than $n^{1/t}$ and at most $p_i n^{1/t}$ and use the generalized Chinese Remainder Theorem.
